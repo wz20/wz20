@@ -1,4 +1,8 @@
 import { PROJECTS } from "./data.js";
+import { initMotion } from "./motion.js";
+
+const OVERLAY_TRANSITION_EVENT = "huajuan:overlay-transition";
+const overlayMotionEvents = new EventTarget();
 
 const createElement = (tagName, className) => {
   const element = document.createElement(tagName);
@@ -42,7 +46,9 @@ export function renderProjects(projects, target) {
     linkText.textContent = "查看 GitHub 项目";
     link.append(linkText, createElement("span", "weui-cell__ft"));
     footer.append(link);
-    article.append(header, body, footer);
+    const content = createElement("div", "project-card__content");
+    content.append(header, body, footer);
+    article.append(content);
     fragment.append(article);
   }
   target.replaceChildren(fragment);
@@ -103,6 +109,34 @@ function restoreFocus(trigger) {
   if (trigger?.isConnected && typeof trigger.focus === "function") trigger.focus({ preventScroll: true });
 }
 
+function hasOtherOpenOverlay(overlay) {
+  return [projectDialog, contactSheet].some((candidate) => candidate && candidate !== overlay && !candidate.hidden);
+}
+
+function requestOverlayTransition(overlay, phase, complete) {
+  overlay.dataset.motionPhase = phase === "open" ? "opening" : "closing";
+  let completed = false;
+  const finish = () => {
+    if (completed) return;
+    completed = true;
+    complete();
+  };
+  const event = new CustomEvent(OVERLAY_TRANSITION_EVENT, {
+    cancelable: true,
+    detail: { overlay, phase, complete: finish },
+  });
+  if (overlayMotionEvents.dispatchEvent(event)) finish();
+}
+
+function finishOverlayClose(overlay, trigger) {
+  overlay.classList.remove("is-open");
+  overlay.hidden = true;
+  overlay.dataset.motionPhase = "closed";
+  if (hasOtherOpenOverlay(overlay)) return;
+  restoreBackground();
+  restoreFocus(trigger);
+}
+
 export function openProjectDialog(id, trigger) {
   const project = PROJECTS.find((item) => item.id === id);
   if (!project || !projectDialog) return;
@@ -117,16 +151,18 @@ export function openProjectDialog(id, trigger) {
   projectDialog.classList.add("is-open");
   isolateOverlay(projectDialog);
   projectDialog.querySelector("[data-close-project]").focus({ preventScroll: true });
+  requestOverlayTransition(projectDialog, "open", () => {
+    projectDialog.dataset.motionPhase = "open";
+  });
 }
 
 export function closeProjectDialog() {
-  if (!projectDialog || projectDialog.hidden) return;
+  if (!projectDialog || projectDialog.hidden || projectDialog.dataset.motionPhase === "closing") return;
   const trigger = projectTrigger;
-  projectDialog.classList.remove("is-open");
-  projectDialog.hidden = true;
-  projectTrigger = null;
-  restoreBackground();
-  restoreFocus(trigger);
+  requestOverlayTransition(projectDialog, "close", () => {
+    projectTrigger = null;
+    finishOverlayClose(projectDialog, trigger);
+  });
 }
 
 export function openContactSheet(trigger) {
@@ -137,16 +173,18 @@ export function openContactSheet(trigger) {
   contactSheet.classList.add("is-open");
   isolateOverlay(contactSheet);
   contactSheet.querySelector("[data-copy-douyin]").focus({ preventScroll: true });
+  requestOverlayTransition(contactSheet, "open", () => {
+    contactSheet.dataset.motionPhase = "open";
+  });
 }
 
 export function closeContactSheet() {
-  if (!contactSheet || contactSheet.hidden) return;
+  if (!contactSheet || contactSheet.hidden || contactSheet.dataset.motionPhase === "closing") return;
   const trigger = contactTrigger;
-  contactSheet.classList.remove("is-open");
-  contactSheet.hidden = true;
-  contactTrigger = null;
-  restoreBackground();
-  restoreFocus(trigger);
+  requestOverlayTransition(contactSheet, "close", () => {
+    contactTrigger = null;
+    finishOverlayClose(contactSheet, trigger);
+  });
 }
 
 export function showToast(message) {
@@ -226,3 +264,12 @@ document.addEventListener("keydown", (event) => {
     first.focus();
   }
 });
+
+const motionController = initMotion({ overlayEventTarget: overlayMotionEvents });
+
+function handlePageHide() {
+  window.removeEventListener("pagehide", handlePageHide);
+  motionController.destroy();
+}
+
+window.addEventListener("pagehide", handlePageHide);

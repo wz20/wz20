@@ -13,7 +13,18 @@
     <header id="home" class="lab-hero" aria-labelledby="hero-title">
       <div class="lab-shell lab-hero__grid">
         <p class="lab-kicker">LAB STATUS · BUILDING</p>
-        <img class="lab-hero__mark" src="./assets/huajuan-mark.svg" alt="" width="320" height="320" />
+        <svg class="lab-hero__mark" viewBox="0 0 320 320" role="img" aria-labelledby="hero-mark-title hero-mark-desc" width="320" height="320">
+          <title id="hero-mark-title">花卷猫咪实验室标志</title>
+          <desc id="hero-mark-desc">由猫耳、圆形花卷和实验轨道组成的线性标志</desc>
+          <path id="orbit-path" d="M38 182C66 78 242 54 282 158S212 286 94 250 18 126 38 182Z" fill="none" stroke="#24D8D2" stroke-width="2" stroke-dasharray="8 12" />
+          <g id="cat-orbiter"><circle r="7" fill="#FF5D8F" /></g>
+          <g fill="none" stroke="#F3F0E8" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+            <path class="cat-line" d="M96 116 80 64l58 34" />
+            <path class="cat-line" d="m224 116 16-52-58 34" />
+            <path class="cat-line" d="M92 142c4-54 132-54 136 0v44c0 60-132 60-136 0Z" />
+            <path class="cat-line" d="M124 160h1m70 0h1M146 190c9 8 19 8 28 0" />
+          </g>
+        </svg>
         <h1 id="hero-title"><span>花卷</span><span>AI 实验室</span></h1>
         <p class="lab-hero__promise">把 AI 想法做成看得见、能运行、可以继续迭代的作品。</p>
         <div class="lab-hero__actions">
@@ -106,7 +117,7 @@
         </noscript>
       </section>
     </main>
-    <div id="project-dialog" class="weui-half-screen-dialog" role="dialog" aria-modal="true" aria-labelledby="project-dialog-title" tabindex="-1" hidden>
+    <div id="project-dialog" class="weui-half-screen-dialog" role="dialog" aria-modal="true" aria-labelledby="project-dialog-title" tabindex="-1" data-motion-phase="closed" hidden>
       <div class="weui-half-screen-dialog__hd">
         <button type="button" data-close-project aria-label="关闭项目详情">×</button>
       </div>
@@ -116,7 +127,7 @@
         <a id="project-dialog-link" class="weui-btn weui-btn_primary" target="_blank" rel="noopener noreferrer">查看 GitHub 项目</a>
       </div>
     </div>
-    <div id="contact-sheet" class="weui-actionsheet" role="dialog" aria-modal="true" aria-labelledby="contact-sheet-title" tabindex="-1" hidden>
+    <div id="contact-sheet" class="weui-actionsheet" role="dialog" aria-modal="true" aria-labelledby="contact-sheet-title" tabindex="-1" data-motion-phase="closed" hidden>
       <div class="weui-actionsheet__title">
         <h2 id="contact-sheet-title" class="weui-actionsheet__title-text">找到花卷</h2>
       </div>
@@ -126,6 +137,7 @@
       <button class="weui-actionsheet__cell" type="button" data-close-contact>取消</button>
     </div>
     <div id="feedback-toast" class="weui-toast" role="status" aria-live="polite" hidden></div>
+    <div class="pointer-spotlight" data-pointer-state="idle" aria-hidden="true"></div>
     <nav class="weui-tabbar" aria-label="章节导航">
       <a class="weui-tabbar__item" href="#home" data-section-link>首页</a>
       <a class="weui-tabbar__item" href="#experiments" data-section-link>实验</a>
