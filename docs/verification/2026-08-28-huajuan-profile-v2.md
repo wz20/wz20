@@ -78,9 +78,18 @@ A fresh re-review found that permissive numeric conversion accepted malformed qv
 - No-JavaScript project and contact content remains complete and was exercised by the Playwright suite.
 - Core content is readable before motion completion, keyboard focus remains visible, overlays restore focus, and reduced motion produces an immediate static state.
 
+## Task 8 local workflow validation
+
+- RED: before the workflow existed, `npm run test:unit` reported 14 passed and 1 failed. The new workflow-policy test failed specifically with `ENOENT` while opening `.github/workflows/pages.yml`.
+- GREEN: `node --test tests/unit/pages-workflow.test.mjs` passed 1/1. The test covers the `main`/relevant-path and manual triggers, rejects a pull-request trigger, restricts permissions to `contents: read`, `pages: write`, and `id-token: write`, requires Node 24 and the approved action major versions, requires `npm ci`, Chromium installation, and `npm test` before Pages upload/deploy, requires artifact path `site`, and checks the Pages environment URL plus non-cancelling concurrency.
+- Full local regression: `npm test` passed with 15 unit tests and 81 Playwright tests; 3 desktop-only motion cases were skipped for the mobile project. The first sandboxed browser launch was blocked by macOS Mach-port permissions before any test executed; the same command completed successfully in the permitted local process context and is the recorded result.
+- YAML structural validation: `ruby -e 'require "yaml"; YAML.load_file(ARGV.fetch(0)); puts "YAML syntax valid (Ruby Psych)"' .github/workflows/pages.yml` printed `YAML syntax valid (Ruby Psych)`.
+- `git diff --check` passed with no output. This validates the local workflow definition only; it does not assert a GitHub Actions run or deployment.
+
 ## Production-only remaining checks
 
 - Run the GitHub Actions test/deploy workflow and verify the live GitHub Pages URL after the authorized release steps.
 - Repeat Lighthouse against the deployed URL, including production CDN/cache/compression behavior; the local score is not a production measurement.
 - Recheck external GitHub/Douyin destinations and the public profile link from the deployed origin.
 - Perform the planned production browser/device review after Pages publication. No production URL, workflow run, merge, or deployment was executed as part of this local Task 7 record.
+- For Task 8, remote push/PR creation, GitHub Pages enablement, production deployment, live URL validation, production browser review, and production Lighthouse remain pending the controller's release gate.
