@@ -904,6 +904,20 @@ main > section {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
 }
 
+.weui-actionsheet__title {
+  height: auto;
+  min-height: 56px;
+  padding: 16px 24px;
+  background: var(--panel-solid);
+}
+
+.weui-actionsheet__title-text {
+  overflow: visible;
+  font-size: 1rem;
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
 .weui-half-screen-dialog__hd [data-close-project] {
   min-width: 44px;
   min-height: 44px;
@@ -924,6 +938,25 @@ main > section {
 .weui-actionsheet__cell,
 .weui-half-screen-dialog__ft {
   border-color: var(--line);
+}
+
+.weui-actionsheet__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 14px 20px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--paper);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-decoration: none;
 }
 
 .weui-actionsheet__cell:active {
@@ -949,6 +982,7 @@ main > section {
   background: rgba(13, 28, 29, 0.96);
   color: var(--paper);
   box-shadow: var(--shadow);
+  transform: none;
 }
 
 .pointer-spotlight {
@@ -1051,6 +1085,8 @@ html[data-motion="ready"] .weui-actionsheet {
 
 @media (min-width: 1100px) {
   .weui-tabbar {
+    display: flex;
+    flex-direction: column;
     right: 18px;
     bottom: 50%;
     width: 78px;
@@ -1060,7 +1096,9 @@ html[data-motion="ready"] .weui-actionsheet {
   }
 
   .weui-tabbar__item {
-    display: block;
+    display: flex;
+    width: 100%;
+    min-height: 44px;
     margin-block: 4px;
   }
 }

@@ -43,7 +43,7 @@ export function renderProjects(projects, target) {
     link.rel = "noopener noreferrer";
     link.ariaLabel = `查看 ${project.title} 的 GitHub 项目`;
     const linkText = createElement("span", "weui-cell__bd");
-    linkText.textContent = "查看 GitHub 项目";
+    linkText.textContent = `查看 ${project.title} 的 GitHub 项目`;
     link.append(linkText, createElement("span", "weui-cell__ft"));
     footer.append(link);
     const content = createElement("div", "project-card__content");

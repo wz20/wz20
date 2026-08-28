@@ -50,10 +50,12 @@ export function initMotion({
   function resetFlowState() {
     const flow = document.querySelector("#flow");
     const stages = [...document.querySelectorAll(".flow-stage")];
+    const progress = document.querySelector(".weui-progress");
     const progressBar = document.querySelector(".weui-progress__inner-bar");
     const flowLink = document.querySelector('[data-section-link][href="#flow"]');
     stages.forEach((stage, index) => stage.classList.toggle("is-active", index === 0));
     if (flow) flow.dataset.activeStage = stages[0]?.dataset.flowStage ?? "idea";
+    if (progress) progress.setAttribute("aria-valuenow", "1");
     if (progressBar) gsap.set(progressBar, { scaleX: 0.25, transformOrigin: "left center" });
     if (flowLink) {
       flowLink.classList.remove("weui-bar__item_on");
@@ -111,7 +113,7 @@ export function initMotion({
 
       root.dataset.motion = "ready";
 
-      const introTargets = ".lab-hero__grid, #hero-title > *, .lab-hero__actions > *, .cat-line";
+      const introTargets = ".lab-hero__mark, .cat-line";
       const intro = branchAnimation(gsap.timeline({
         defaults: { ease: "power3.out" },
         onComplete() {
@@ -119,16 +121,13 @@ export function initMotion({
         },
       }));
       intro
-        .from(".lab-hero__grid", { autoAlpha: 0, duration: 0.45 })
+        .from(".lab-hero__mark", { scale: 0.96, transformOrigin: "center", duration: 0.45 })
         .from(".cat-line", {
           strokeDasharray: (_, path) => path.getTotalLength(),
           strokeDashoffset: (_, path) => path.getTotalLength(),
           duration: 0.78,
           stagger: 0.08,
-        }, "<0.08")
-        .from("#hero-title > *", { y: 34, autoAlpha: 0, duration: 0.62, stagger: 0.08 }, "<0.16")
-        .from(".lab-hero__promise", { y: 20, autoAlpha: 0, duration: 0.44 }, "<0.18")
-        .from(".lab-hero__actions > *", { y: 18, autoAlpha: 0, duration: 0.38, stagger: 0.08 }, "<0.12");
+        }, "<0.08");
 
       const orbit = branchAnimation(gsap.to("#cat-orbiter", {
         duration: 11,
@@ -178,6 +177,7 @@ export function initMotion({
           const index = Math.min(stages.length - 1, Math.floor(progress * stages.length));
           stages.forEach((stage, stageIndex) => stage.classList.toggle("is-active", stageIndex === index));
           flow.dataset.activeStage = stages[index].dataset.flowStage;
+          flow.querySelector(".weui-progress")?.setAttribute("aria-valuenow", String(index + 1));
           setFlowNavigationActive(isActive);
         }
 
