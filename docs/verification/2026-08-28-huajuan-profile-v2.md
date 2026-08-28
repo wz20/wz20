@@ -124,8 +124,8 @@ Whole-branch review found that the normal-motion cat orbit used an infinite GSAP
 
 ## Task 10 remote verification, merge gate, and final release
 
-- Current branch base: merged production `main` at `2e61c1f654ffe114451f2566a03447c7b980d2b8`.
-- Current full `npm test`: 31 unit tests passed; Playwright passed 90 and skipped the 4 mobile executions of desktop-only motion cases out of 94, with 0 failures. One earlier full run had a single desktop project-dialog focus failure after 89 browser passes and the same 4 expected skips; that exact case then passed 1/1 in isolation, and the complete fresh rerun produced the recorded green result without changing dialog code or tests.
+- README release branch pre-merge base: merged production `main` at `2e61c1f654ffe114451f2566a03447c7b980d2b8`.
+- Pre-remote full `npm test`: 31 unit tests passed; Playwright passed 90 and skipped the 4 mobile executions of desktop-only motion cases out of 94, with 0 failures. One earlier full run had a single desktop project-dialog focus failure after 89 browser passes and the same 4 expected skips; that exact case then passed 1/1 in isolation, and the complete fresh rerun produced the recorded green result without changing dialog code or tests.
 - Pre-remote checks: `node --check tests/unit/readme.test.mjs` passed; `xmllint --noout` passed for both README heroes and both site SVGs; `git diff --check` passed with no output.
 - GitHub GraphQL snapshot observed on 2026-08-28: `wz20/OAuth2-sso-demo` 7 stars, `wz20/create-vox-paper-collage-video` 2, `wz20/ian-huajuan-illustrations` 1, and `wz20/jinjing-skill` 1.
 - The deterministic featured-project order is therefore OAuth2 SSO Demo (7) → VOX Paper Collage Video (2) → Huajuan Illustrations (1) → Jinjing Skill (1). Equal-star entries retain their prior relative order, so Huajuan Illustrations remains before Jinjing Skill. The recorded numeric snapshot is internal project data and is not rendered as a visibly stale count.
