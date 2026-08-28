@@ -168,6 +168,7 @@ test("centers the desktop spotlight on the viewport pointer coordinate", async (
   await page.goto("/");
   const target = { x: 640, y: 320 };
 
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.motion)).toBe("ready");
   await page.mouse.move(target.x, target.y);
   const spotlight = page.locator(".pointer-spotlight");
   await expect(spotlight).toHaveAttribute("data-pointer-state", "active");
