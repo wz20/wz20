@@ -80,6 +80,28 @@ test("advances one synchronized idea-to-work stage while scrolling on desktop", 
   await expect(page.locator('[data-section-link][href="#flow"]')).toHaveAttribute("aria-current", "location");
 });
 
+test("centers the desktop spotlight on the viewport pointer coordinate", async ({ page, isMobile }) => {
+  test.skip(isMobile, "pointer spotlight is desktop-only");
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/");
+  const target = { x: 640, y: 320 };
+
+  await page.mouse.move(target.x, target.y);
+  const spotlight = page.locator(".pointer-spotlight");
+  await expect(spotlight).toHaveAttribute("data-pointer-state", "active");
+  await expect.poll(() => spotlight.evaluate((element, pointer) => {
+    const bounds = element.getBoundingClientRect();
+    return {
+      centered: Math.abs(bounds.left + bounds.width / 2 - pointer.x) <= 12
+        && Math.abs(bounds.top + bounds.height / 2 - pointer.y) <= 12,
+      insideViewport: bounds.left >= 0
+        && bounds.top >= 0
+        && bounds.right <= innerWidth
+        && bounds.bottom <= innerHeight,
+    };
+  }, target)).toEqual({ centered: true, insideViewport: true });
+});
+
 test("enables bounded desktop pointer motion and removes owned effects on pagehide", async ({ page, isMobile }) => {
   test.skip(isMobile, "pointer motion is desktop-only");
   await page.goto("/");

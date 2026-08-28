@@ -101,6 +101,27 @@ test("the contact cancel control restores focus to its opener", async ({ page })
   await expect(trigger).toBeFocused();
 });
 
+test("Escape closes the top contact sheet while the project dialog exits", async ({ page }) => {
+  await page.goto("/");
+  const projectTrigger = page.locator("[data-open-project]").first();
+  const contactTrigger = page.getByRole("button", { name: "联系花卷" });
+  const dialog = page.locator("#project-dialog");
+  const sheet = page.locator("#contact-sheet");
+
+  await projectTrigger.click();
+  await expect(dialog).toHaveAttribute("data-motion-phase", "open");
+  await contactTrigger.evaluate((element) => element.click());
+  await expect(dialog).toHaveAttribute("data-motion-phase", "closing");
+  await expect(sheet).toBeVisible();
+
+  await page.keyboard.press("Escape");
+
+  await expect(sheet).toBeHidden();
+  await expect(dialog).toBeHidden();
+  await expect(contactTrigger).toBeFocused();
+  await expect(page.locator("main#main-content")).not.toHaveAttribute("inert", "");
+});
+
 test("clipboard fallback removes its helper and preserves focus", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "clipboard", { value: undefined, configurable: true });

@@ -86,9 +86,12 @@ function focusableElements(container) {
 }
 
 function activeOverlay() {
-  if (projectDialog && !projectDialog.hidden) return projectDialog;
-  if (contactSheet && !contactSheet.hidden) return contactSheet;
-  return null;
+  return [contactSheet, projectDialog].find((overlay) => (
+    overlay
+    && !overlay.hidden
+    && !overlay.inert
+    && overlay.dataset.motionPhase !== "closing"
+  )) ?? null;
 }
 
 function restoreBackground() {
