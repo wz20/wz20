@@ -13,6 +13,23 @@ const contentTypes = new Map([
   [".svg", "image/svg+xml"],
   [".woff2", "font/woff2"],
 ]);
+const compressibleExtensions = new Set([".html", ".css", ".js", ".svg"]);
+
+function acceptsGzip(header = "") {
+  let gzipQuality;
+  let wildcardQuality;
+  for (const entry of header.split(",")) {
+    const [rawEncoding, ...parameters] = entry.trim().split(";");
+    const encoding = rawEncoding.trim().toLowerCase();
+    if (!encoding) continue;
+    const qualityParameter = parameters.find((parameter) => /^\s*q\s*=/i.test(parameter));
+    const parsedQuality = qualityParameter ? Number(qualityParameter.split("=")[1]?.trim()) : 1;
+    const quality = Number.isFinite(parsedQuality) && parsedQuality >= 0 && parsedQuality <= 1 ? parsedQuality : 0;
+    if (encoding === "gzip") gzipQuality = quality;
+    if (encoding === "*") wildcardQuality = quality;
+  }
+  return (gzipQuality ?? wildcardQuality ?? 0) > 0;
+}
 
 createServer(async (request, response) => {
   try {
@@ -26,9 +43,10 @@ createServer(async (request, response) => {
     const extension = extname(filePath);
     const headers = { "Content-Type": contentTypes.get(extension) ?? "application/octet-stream" };
     const source = createReadStream(filePath);
-    if ([".html", ".css", ".js", ".svg"].includes(extension) && request.headers["accept-encoding"]?.includes("gzip")) {
+    const compressible = compressibleExtensions.has(extension);
+    if (compressible) headers.Vary = "Accept-Encoding";
+    if (compressible && acceptsGzip(request.headers["accept-encoding"])) {
       headers["Content-Encoding"] = "gzip";
-      headers.Vary = "Accept-Encoding";
       response.writeHead(200, headers);
       source.pipe(createGzip()).pipe(response);
       return;

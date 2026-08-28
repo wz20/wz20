@@ -29,7 +29,7 @@ test("uses the selected project's safe URL and descriptive accessible name", asy
 
   await expect(page.locator("#project-dialog-title")).toHaveText("Huajuan Illustrations");
   await expect(page.locator("#project-dialog-outcome")).toHaveText("为文章配图、视觉隐喻、故事板与动画生产提供统一角色资产。");
-  const link = page.locator("#project-dialog").getByRole("link", { name: "查看 Huajuan Illustrations 的 GitHub 项目" });
+  const link = page.locator("#project-dialog").getByRole("link", { name: "查看 GitHub 项目：Huajuan Illustrations" });
   await expect(link).toHaveAttribute("href", "https://github.com/wz20/ian-huajuan-illustrations");
   await expect(link).toHaveAttribute("target", "_blank");
   await expect(link).toHaveAttribute("rel", /noopener/);

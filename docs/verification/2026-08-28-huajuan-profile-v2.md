@@ -7,6 +7,7 @@ Date: 2026-08-28 (Asia/Shanghai)
 - Tested parent commit: `53e2d1b8b91fed3eb6a6a181e16319ee47bd79fd`.
 - Exact staged source/test tree checked before this record was written: `f81c36b2494dfbb80e70eddbcbd8b7830aa1571d`.
 - That tree contains `scripts/serve.mjs`, `site/`, and `tests/`; this verification document was intentionally written only after the checks. The documentation commit containing this record therefore did not exist when the checks ran and is not presented as the tested commit.
+- Review follow-up tested parent: `e68a5be4aeced08c58edd4ba189a743a4b19c7f4`; exact staged source/test tree after all four review repairs and before this document update: `3f06ded809974b1448b8d2e66ac5a8bac68376dd`. The later follow-up documentation commit likewise did not exist during those checks.
 
 ## Test-first evidence and root-cause repairs
 
@@ -30,7 +31,7 @@ The Task 7 tests were added before the owning repairs. The two brief-prescribed 
 
 ## Normal-speed browser-harness review
 
-The review used `browser-harness` with `BH_RECORD=0` and one reused `BU_CDP_URL=http://127.0.0.1:9333` connection to an isolated local Playwright Chromium process. No authenticated user profile, cloud browser, recording, or second manual automation stack was used. Viewports and reduced-motion media were switched through CDP in that connection. Interactions used filtered partial accessibility nodes and their box coordinates; inspection output was limited to this local page.
+Authorization to control the user's existing authenticated Chrome was not available for this task, so that browser and profile were not used. The required review used `browser-harness` with `BH_RECORD=0` and one reused `BU_CDP_URL=http://127.0.0.1:9333` connection to an isolated local Playwright Chromium process with a fresh temporary, unauthenticated profile. No cloud browser, recording, or second manual automation stack was used. Viewports and reduced-motion media were switched through CDP in that connection. Interactions used filtered partial accessibility nodes and their box coordinates; inspection output was limited to this local page.
 
 | Width | Observed result |
 |---|---|
@@ -41,6 +42,21 @@ The review used `browser-harness` with `BH_RECORD=0` and one reused `BU_CDP_URL=
 Across the final complete pass at all three widths, the page-filtered console error, page error, and unhandled-rejection arrays were empty; Performance Resource Timing reported no HTTP responses with status 400 or greater. No remaining clipping, overlap, illegible content, unsafe focus loss, or uncomfortable reduced-motion animation was observed.
 
 One browser-tooling issue was isolated from the product: an early full accessibility-tree/wheel probe made the first headless tab unresponsive. The review stayed on the same isolated browser-harness connection, opened a fresh local page in that browser, switched to filtered partial accessibility queries and native smooth scrolling, and completed the full pass without recurrence. The isolated Chromium process was then stopped and only its exact temporary profile directory was removed.
+
+## Review follow-up verification
+
+The Task 7 review identified one P1 label-in-name defect, one P2 policy-coverage gap, and two P3 server/documentation issues. Tests were strengthened before the repairs.
+
+- RED unit run: `npm run test:unit` — 7 passed and 4 failed. The four failures proved that `gzip;q=0` was incorrectly accepted, identity responses omitted `Vary`, wildcard acceptance was unsupported, and an explicit gzip denial did not override a positive wildcard.
+- RED browser run: `npm run test:e2e -- tests/e2e/accessibility.spec.js tests/e2e/content.spec.js` — 22 passed and 6 failed across desktop/mobile. The failures showed that the visible `查看项目` and `查看 GitHub 项目` strings were not contiguous substrings of the no-JavaScript and dialog accessible names.
+- Source policy now recognizes remote runtime URLs with single or double quotes and with `http://`, `https://`, or protocol-relative `//` forms. Rendered JavaScript-enabled and JavaScript-disabled pages now verify every `target="_blank"` link has `noopener` and `noreferrer` as rel tokens, covering generated links as well as literal HTML.
+- No-JavaScript project links now use names such as `查看项目：VOX Paper Collage Video（GitHub）`; the dialog uses names such as `查看 GitHub 项目：VOX Paper Collage Video`. Both include their exact visible labels contiguously.
+- The local server now parses gzip and wildcard quality values, treats a specific gzip quality as authoritative over `*`, rejects zero/invalid quality, and emits `Vary: Accept-Encoding` on every compressible representation whether compressed or served as identity.
+- Focused GREEN: unit 11/11 passed; accessibility/content 28/28 passed; the synchronized legacy dialog-name interaction check passed 2/2.
+- The first expanded full run found two stale legacy-name assertions after 79 browser passes and 3 expected skips. The assertions were updated to the new full accessible name, the focused check passed 2/2, and the fresh final `npm test` passed unit 11/11 and browser 81/81 with the same 3 desktop-only mobile skips (84 total browser cases).
+- Syntax: `node --check` passed for `scripts/serve.mjs`, `site/data.js`, `site/app.js`, `site/motion.js`, `playwright.config.js`, the three changed E2E files, and the two unit policy files. `git diff --cached --check` passed with no output.
+- Because server negotiation changed, the exact local Lighthouse audit was rerun. Lighthouse 13.4.1 wrote a fresh report at `2026-08-28T10:08:04.020Z`; the threshold command exited 0 with Performance `0.99` and Accessibility `1.00`. Final follow-up FCP was `1579.5060 ms`, LCP `1954.5060 ms`, TBT `0 ms`, and CLS `0.0009176536041691`.
+- Direct response checks observed `Vary: Accept-Encoding` with no `Content-Encoding` for `Accept-Encoding: gzip;q=0`, and both `Vary: Accept-Encoding` and `Content-Encoding: gzip` for `Accept-Encoding: br;q=0, *;q=0.5`.
 
 ## Preserved runtime policies
 

@@ -1,5 +1,21 @@
 import { expect, test } from "@playwright/test";
 
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+async function expectVisibleLabelInAccessibleName(link) {
+  const visibleLabel = (await link.innerText()).trim();
+  await expect(link).toHaveAccessibleName(new RegExp(escapeRegExp(visibleLabel)));
+}
+
+async function unsafeBlankLinks(page) {
+  return page.locator('a[target="_blank"]').evaluateAll((links) => links
+    .filter((link) => {
+      const tokens = new Set(link.rel.toLowerCase().split(/\s+/).filter(Boolean));
+      return !tokens.has("noopener") || !tokens.has("noreferrer");
+    })
+    .map((link) => ({ href: link.href, rel: link.rel })));
+}
+
 test("has one visible h1, named controls, and no console errors", async ({ page }) => {
   const errors = [];
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
@@ -32,11 +48,33 @@ test("exposes the idea-to-work indicator as a real progressbar", async ({ page }
 test("keeps every visible project-link label in its accessible name", async ({ page }) => {
   await page.goto("/");
   const links = page.locator(".project-card .weui-panel__ft a");
-  for (const link of await links.all()) {
-    const visibleLabel = (await link.innerText()).trim();
-    const accessibleName = await link.getAttribute("aria-label");
-    expect(accessibleName).toContain(visibleLabel);
-  }
+  for (const link of await links.all()) await expectVisibleLabelInAccessibleName(link);
+
+  await page.getByRole("button", { name: /查看.*详情/ }).first().click();
+  await expectVisibleLabelInAccessibleName(page.locator("#project-dialog-link"));
+});
+
+test("keeps no-JavaScript project labels inside their accessible names", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("http://127.0.0.1:4173/");
+  const links = page.locator("[data-static-project] a");
+  await expect(links).toHaveCount(4);
+  for (const link of await links.all()) await expectVisibleLabelInAccessibleName(link);
+  await context.close();
+});
+
+test("hardens every rendered new-tab link", async ({ page }) => {
+  await page.goto("/");
+  expect(await unsafeBlankLinks(page)).toEqual([]);
+});
+
+test("hardens every no-JavaScript new-tab link", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("http://127.0.0.1:4173/");
+  expect(await unsafeBlankLinks(page)).toEqual([]);
+  await context.close();
 });
 
 test("keeps the core hero message readable from the first rendered state", async ({ page }) => {

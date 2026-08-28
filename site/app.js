@@ -149,7 +149,7 @@ export function openProjectDialog(id, trigger) {
   projectDialog.querySelector("#project-dialog-outcome").textContent = project.outcome;
   const link = projectDialog.querySelector("#project-dialog-link");
   link.href = project.repo;
-  link.ariaLabel = `查看 ${project.title} 的 GitHub 项目`;
+  link.ariaLabel = `查看 GitHub 项目：${project.title}`;
   projectDialog.hidden = false;
   projectDialog.classList.add("is-open");
   isolateOverlay(projectDialog);

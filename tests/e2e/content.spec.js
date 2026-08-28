@@ -16,7 +16,7 @@ test("keeps selected experiments when JavaScript is disabled", async ({ browser 
   await expect(vox).toContainText("自动生成 VOX 风格纸张拼贴视频的 Codex Skill。");
   await expect(vox).toContainText("把素材准备、镜头编排与视频生产流程串成一条可复用管线。");
   await expect(vox).toContainText("Codex Skill · Video · Automation");
-  const voxLink = vox.getByRole("link", { name: "查看 VOX Paper Collage Video 的 GitHub 项目" });
+  const voxLink = vox.getByRole("link", { name: "查看项目：VOX Paper Collage Video（GitHub）" });
   await expect(voxLink).toHaveAttribute("href", "https://github.com/wz20/create-vox-paper-collage-video");
   await expect(voxLink).toHaveAttribute("target", "_blank");
   await expect(voxLink).toHaveAttribute("rel", /noopener/);
