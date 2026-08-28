@@ -11,5 +11,16 @@ test("keeps selected experiments when JavaScript is disabled", async ({ browser 
   const page = await context.newPage();
   await page.goto("http://127.0.0.1:4173/");
   await expect(page.locator("[data-static-project]")).toHaveCount(4);
+  const vox = page.locator("[data-static-project]").filter({ hasText: "VOX Paper Collage Video" });
+  await expect(vox).toContainText("ACTIVE · 视频生产系统");
+  await expect(vox).toContainText("自动生成 VOX 风格纸张拼贴视频的 Codex Skill。");
+  await expect(vox).toContainText("把素材准备、镜头编排与视频生产流程串成一条可复用管线。");
+  await expect(vox).toContainText("Codex Skill · Video · Automation");
+  const voxLink = vox.getByRole("link", { name: "查看 VOX Paper Collage Video 的 GitHub 项目" });
+  await expect(voxLink).toHaveAttribute("href", "https://github.com/wz20/create-vox-paper-collage-video");
+  await expect(voxLink).toHaveAttribute("target", "_blank");
+  await expect(voxLink).toHaveAttribute("rel", /noopener/);
+  await expect(page.locator("[data-static-project]").filter({ hasText: "OAuth2 SSO Demo" })).toContainText("REFERENCE · 后端工程实践");
+  await expect(page.locator("[data-static-project]").filter({ hasText: "OAuth2 SSO Demo" })).toContainText("Java · Spring · OAuth2");
   await context.close();
 });
