@@ -26,8 +26,13 @@ const scalar = (lines, indent, key) => {
   return matches[0].slice(prefix.length);
 };
 
-const steps = (source) => {
-  const lines = block(source, 4, "steps");
+const deployJob = (source) => {
+  const jobs = block(source, 0, "jobs");
+  return block(jobs.join("\n"), 2, "deploy");
+};
+
+const steps = (job) => {
+  const lines = block(job.join("\n"), 4, "steps");
   const starts = lines.flatMap((line, index) => line.startsWith("      - ") ? [index] : []);
   assert.ok(starts.length > 0, "workflow must declare deployment steps");
   return starts.map((start, index) => lines.slice(start, starts[index + 1] ?? lines.length));
@@ -49,6 +54,8 @@ const actionStep = (allSteps, action) => exactlyOne(allSteps.filter((step) => st
 
 const runStep = (allSteps, command) => exactlyOne(allSteps.filter((step) => stepValue(step, "run") === command), command);
 
+const actionInvocations = (source, action) => source.split(/\r?\n/).filter((line) => line.trim() === `uses: ${action}`);
+
 const stepIndex = (allSteps, step) => {
   const index = allSteps.indexOf(step);
   assert.notEqual(index, -1, "required workflow step was not found");
@@ -61,7 +68,8 @@ const validateWorkflow = (source) => {
   assert.match(source, /^      - "\.github\/workflows\/pages\.yml"$/m);
   assert.doesNotMatch(source, /^\s*pull_request\s*:/m);
 
-  const allSteps = steps(source);
+  const deployment = deployJob(source);
+  const allSteps = steps(deployment);
   const actions = [
     "actions/checkout@v6",
     "actions/setup-node@v6",
@@ -70,6 +78,9 @@ const validateWorkflow = (source) => {
     "actions/deploy-pages@v4",
   ];
   const actionSteps = new Map(actions.map((action) => [action, actionStep(allSteps, action)]));
+  for (const action of ["actions/upload-pages-artifact@v4", "actions/deploy-pages@v4"]) {
+    assert.equal(actionInvocations(source, action).length, 1, `expected exactly one ${action} invocation across all jobs`);
+  }
 
   const nodeConfiguration = block(actionSteps.get("actions/setup-node@v6").join("\n"), 8, "with");
   assert.equal(scalar(nodeConfiguration, 10, "node-version"), "24");
@@ -86,7 +97,7 @@ const validateWorkflow = (source) => {
     [["contents", "read"], ["id-token", "write"], ["pages", "write"]],
   );
 
-  const environment = block(source, 4, "environment");
+  const environment = block(deployment.join("\n"), 4, "environment");
   assert.equal(scalar(environment, 6, "name"), "github-pages");
   assert.equal(scalar(environment, 6, "url"), "${{ steps.deployment.outputs.page_url }}");
 
@@ -111,6 +122,16 @@ test("deploys only the site directory through the approved Pages workflow", asyn
   validateWorkflow(await workflow());
 });
 
+test("scopes Pages deployment validation to jobs.deploy", async () => {
+  const source = await workflow();
+  const withPreflight = source.replace(
+    "  deploy:\n",
+    "  preflight:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Read deployment inputs\n        run: echo ready\n  deploy:\n",
+  );
+
+  assert.doesNotThrow(() => validateWorkflow(withPreflight));
+});
+
 test("rejects policy-breaking Pages workflow mutations", async () => {
   const source = await workflow();
   const extraUpload = source.replace(
@@ -121,6 +142,8 @@ test("rejects policy-breaking Pages workflow mutations", async () => {
     "      - name: Verify site\n        run: npm test\n      - name: Configure Pages\n        uses: actions/configure-pages@v5",
     "      - name: Configure Pages\n        uses: actions/configure-pages@v5\n      - name: Verify site\n        run: npm test",
   );
+  const secondJobUpload = `${source}\n  audit-upload:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Upload an invalid artifact\n        uses: actions/upload-pages-artifact@v4\n        with:\n          path: .\n`;
+  const secondJobDeploy = `${source}\n  audit-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Deploy a second time\n        uses: actions/deploy-pages@v4\n`;
 
   for (const [name, mutation] of [
     ["a root artifact path", source.replace("path: site", "path: .")],
@@ -128,5 +151,7 @@ test("rejects policy-breaking Pages workflow mutations", async () => {
     ["a preview environment", source.replace("name: github-pages", "name: preview")],
     ["a non-Pages concurrency group", source.replace("group: pages", "group: profile")],
     ["configuration before tests", configureBeforeTests],
+    ["a second job that uploads a root artifact", secondJobUpload],
+    ["a second job that deploys Pages", secondJobDeploy],
   ]) assert.throws(() => validateWorkflow(mutation), name);
 });
