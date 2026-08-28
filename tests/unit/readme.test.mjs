@@ -83,16 +83,23 @@ test("ships XML-safe static dark and light SVG heroes", async () => {
     const theme = index === 0 ? "dark" : "light";
 
     assert.ok(info.isFile(), `${theme} hero must be a file`);
-    assert.match(svg, /^<svg\b[^>]*\bwidth="1200"[^>]*\bheight="360"[^>]*\bviewBox="0 0 1200 360"[^>]*>/);
-    assert.match(svg, /<title\b[^>]*>花卷 AI 实验室<\/title>/);
-    assert.match(svg, /<desc\b[^>]*>[^<]*IDEA[^<]*VISIBLE WORK[^<]*<\/desc>/);
+    const svgRoot = svg.match(/^<svg\b[^>]*>/)?.[0] ?? "";
+    assert.match(svgRoot, /\bwidth="1200"/);
+    assert.match(svgRoot, /\bheight="360"/);
+    assert.match(svgRoot, /\bviewBox="0 0 1200 360"/);
+    assert.match(svgRoot, /\brole="img"/);
+    assert.match(svgRoot, /\baria-labelledby="hero-title hero-desc"/);
+    assert.match(svg, /<title\b[^>]*\bid="hero-title"[^>]*>花卷 AI 实验室<\/title>/);
+    assert.match(svg, /<desc\b[^>]*\bid="hero-desc"[^>]*>[^<]*花卷猫咪[^<]*IDEA[^<]*VISIBLE WORK[^<]*<\/desc>/);
     assert.match(svg, /<text\b[^>]*>HUAJUAN AI LAB<\/text>/);
     assert.match(svg, /<text\b[^>]*>花卷 AI 实验室<\/text>/);
     assert.match(svg, /<text\b[^>]*>把 AI 想法做成看得见、能运行的作品<\/text>/);
     assert.match(svg, /<text\b[^>]*>IDEA<\/text>[\s\S]*<text\b[^>]*>AGENT<\/text>[\s\S]*<text\b[^>]*>TOOLS<\/text>[\s\S]*<text\b[^>]*>VISIBLE WORK<\/text>/);
     assert.match(svg, /<text\b[^>]*>LAB STATUS · BUILDING<\/text>/);
-    assert.match(svg, /M96 116 80 64l58 34/);
-    assert.match(svg, /m224 116 16-52-58 34/);
+    const pathElements = [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*\/>/g)];
+    assert.ok(pathElements.length >= 5, `${theme} hero must retain a multi-path Huajuan cat/lab mark`);
+    assert.ok(pathElements.every(([, pathData]) => pathData.trim().length >= 10), `${theme} hero paths must contain meaningful geometry`);
+    assert.match(svg, /<g\b(?=[^>]*\bstroke-linecap="round")(?=[^>]*\bstroke-linejoin="round")[^>]*>/);
     assert.match(svg, /#24D8D2/i);
     assert.match(svg, /#FF5D8F/i);
     assert.match(svg, theme === "dark" ? /fill="#071011"/i : /fill="#F3F0E8"/i);
