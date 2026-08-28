@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="mark-title mark-desc">
+  <title id="mark-title">花卷猫咪实验室标志</title>
+  <desc id="mark-desc">由猫耳、圆形花卷和实验轨道组成的线性标志</desc>
+  <path id="orbit-path" d="M38 182C66 78 242 54 282 158S212 286 94 250 18 126 38 182Z" fill="none" stroke="#24D8D2" stroke-width="2" stroke-dasharray="8 12"/>
+  <g id="cat-orbiter"><circle r="7" fill="#FF5D8F"/></g>
+  <g fill="none" stroke="#F3F0E8" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+    <path class="cat-line" d="M96 116 80 64l58 34"/>
+    <path class="cat-line" d="m224 116 16-52-58 34"/>
+    <path class="cat-line" d="M92 142c4-54 132-54 136 0v44c0 60-132 60-136 0Z"/>
+    <path class="cat-line" d="M124 160h1m70 0h1M146 190c9 8 19 8 28 0"/>
+  </g>
+</svg>
