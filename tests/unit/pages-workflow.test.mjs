@@ -31,8 +31,15 @@ const validateWorkflow = (source) => {
   const triggers = record(parsed.on, "top-level on");
   assert.deepEqual(Object.keys(triggers).sort(), ["push", "workflow_dispatch"]);
   const push = record(triggers.push, "push trigger");
-  assert.deepEqual(push.branches, ["main"]);
-  assert.deepEqual(push.paths, ["site/**", ".github/workflows/pages.yml"]);
+  assert.deepEqual(push, {
+    branches: ["main"],
+    paths: ["site/**", ".github/workflows/pages.yml"],
+  });
+  assert.ok(
+    triggers.workflow_dispatch === null
+      || (typeof triggers.workflow_dispatch === "object" && Object.keys(triggers.workflow_dispatch).length === 0),
+    "workflow_dispatch must not define inputs or other configuration",
+  );
 
   assert.deepEqual(parsed.permissions, {
     contents: "read",
@@ -42,6 +49,9 @@ const validateWorkflow = (source) => {
   assert.deepEqual(parsed.concurrency, { group: "pages", "cancel-in-progress": false });
 
   const jobs = record(parsed.jobs, "jobs");
+  for (const [jobName, job] of Object.entries(jobs)) {
+    assert.ok(!Object.hasOwn(record(job, `jobs.${jobName}`), "permissions"), `jobs.${jobName} must not override permissions`);
+  }
   const deploy = record(jobs.deploy, "jobs.deploy");
   assert.deepEqual(deploy.environment, {
     name: "github-pages",
@@ -121,6 +131,16 @@ test("rejects policy-breaking Pages workflow mutations", async () => {
   const secondJobDeploy = `${source}\n  audit-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Deploy a second time\n        uses: actions/deploy-pages@v4\n`;
   const quotedSecondJobUpload = `${source}\n  quoted-audit-upload:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Upload a quoted invalid artifact\n        uses: "actions/upload-pages-artifact@v4" # duplicate\n        with:\n          path: .\n`;
   const commentedSecondJobDeploy = `${source}\n  commented-audit-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Deploy a commented second time\n        uses: 'actions/deploy-pages@v4' # duplicate\n`;
+  const deployJobPermissions = source.replace("  deploy:\n", "  deploy:\n    permissions: write-all\n");
+  const preflightJobPermissions = source.replace(
+    "  deploy:\n",
+    "  preflight:\n    permissions: write-all\n    runs-on: ubuntu-latest\n    steps:\n      - name: Read deployment inputs\n        run: echo ready\n  deploy:\n",
+  );
+  const tagTrigger = source.replace("    branches: [main]\n", "    branches: [main]\n    tags: [\"v*\"]\n");
+  const dispatchInputs = source.replace(
+    "  workflow_dispatch:\n",
+    "  workflow_dispatch:\n    inputs:\n      target:\n        required: true\n        type: string\n",
+  );
 
   for (const [name, mutation] of [
     ["a root artifact path", source.replace("path: site", "path: .")],
@@ -132,5 +152,9 @@ test("rejects policy-breaking Pages workflow mutations", async () => {
     ["a second job that deploys Pages", secondJobDeploy],
     ["a second job that quotes a Pages upload action", quotedSecondJobUpload],
     ["a second job that comments a Pages deploy action", commentedSecondJobDeploy],
+    ["a deploy job permission override", deployJobPermissions],
+    ["a preflight job permission override", preflightJobPermissions],
+    ["a tag trigger", tagTrigger],
+    ["workflow dispatch inputs", dispatchInputs],
   ]) assert.throws(() => validateWorkflow(mutation), name);
 });
