@@ -574,6 +574,38 @@ main > section {
   background: var(--panel);
 }
 
+.static-projects a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  margin-top: 8px;
+  padding: 8px 15px;
+  border: 1px solid var(--signal);
+  border-radius: 999px;
+  background: rgba(36, 216, 210, 0.08);
+  color: var(--signal);
+  cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.static-projects a::after {
+  margin-left: 8px;
+  content: "↗";
+}
+
+.static-projects a:focus-visible {
+  border-color: var(--note);
+  background: var(--note);
+  color: var(--ink);
+}
+
 /* Flow: a visible four-stop signal path. */
 .lab-flow {
   overflow: hidden;
@@ -622,7 +654,19 @@ main > section {
   min-width: 0;
   min-height: 260px;
   padding: 28px 24px 30px;
-  opacity: 0.54;
+  background: linear-gradient(145deg, rgba(140, 154, 152, 0.035), transparent 60%);
+  transition: transform 220ms ease;
+}
+
+.flow-stage::after {
+  position: absolute;
+  inset: auto 24px 0;
+  height: 2px;
+  background: var(--signal);
+  content: "";
+  opacity: 0.18;
+  transform: scaleX(0.18);
+  transform-origin: left center;
   transition: transform 220ms ease, opacity 220ms ease;
 }
 
@@ -657,12 +701,16 @@ main > section {
 
 .flow-stage.is-active {
   background: linear-gradient(145deg, rgba(36, 216, 210, 0.1), transparent 62%);
-  opacity: 1;
 }
 
 .flow-stage.is-active > span {
   color: var(--signal);
   box-shadow: 0 0 28px rgba(36, 216, 210, 0.2);
+}
+
+.flow-stage.is-active::after {
+  opacity: 0.85;
+  transform: scaleX(1);
 }
 
 /* Toolkit: three labeled drawers with a deliberately stepped baseline. */
@@ -886,9 +934,14 @@ main > section {
     color: var(--card-accent);
   }
 
+  .static-projects a:hover {
+    background: var(--signal);
+    color: var(--ink);
+    transform: translateY(-2px);
+  }
+
   .flow-stage:hover,
   .toolkit-grid article:hover {
-    opacity: 1;
     transform: translateY(-6px);
   }
 

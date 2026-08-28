@@ -24,3 +24,23 @@ test("keeps selected experiments when JavaScript is disabled", async ({ browser 
   await expect(page.locator("[data-static-project]").filter({ hasText: "OAuth2 SSO Demo" })).toContainText("Java · Spring · OAuth2");
   await context.close();
 });
+
+test("shows recognizable fallback project links without JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("http://127.0.0.1:4173/");
+  const link = page.locator("[data-static-project] a").first();
+  const base = await link.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    return { borderStyle: styles.borderStyle, cursor: styles.cursor, display: styles.display };
+  });
+  expect(base).toEqual({ borderStyle: "solid", cursor: "pointer", display: "inline-flex" });
+  const supportsHover = await page.evaluate(() => matchMedia("(hover: hover) and (pointer: fine)").matches);
+  if (supportsHover) {
+    await link.hover();
+    await expect.poll(() => link.evaluate((element) => getComputedStyle(element).transform)).not.toBe("none");
+  }
+  await link.focus();
+  await expect.poll(() => link.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe("solid");
+  await context.close();
+});

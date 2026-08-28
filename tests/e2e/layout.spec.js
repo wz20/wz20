@@ -35,3 +35,37 @@ for (const width of [320, 390]) {
     expect(lineCount).toBe(1);
   });
 }
+
+test("keeps inactive flow copy at WCAG AA contrast", async ({ page }) => {
+  await page.goto("/");
+  const result = await page.locator(".flow-stage:not(.is-active)").first().evaluate((stage) => {
+    const parseColor = (value) => {
+      const [red, green, blue, alpha = 1] = value.match(/[\d.]+/g).map(Number);
+      return { red, green, blue, alpha };
+    };
+    const composite = (foreground, background, alpha = foreground.alpha) => ({
+      red: foreground.red * alpha + background.red * (1 - alpha),
+      green: foreground.green * alpha + background.green * (1 - alpha),
+      blue: foreground.blue * alpha + background.blue * (1 - alpha),
+      alpha: 1,
+    });
+    const luminance = ({ red, green, blue }) => {
+      const channels = [red, green, blue].map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+    };
+    const body = parseColor(getComputedStyle(document.body).backgroundColor);
+    const track = parseColor(getComputedStyle(stage.parentElement).backgroundColor);
+    const background = composite(track, body);
+    const text = parseColor(getComputedStyle(stage.querySelector("p")).color);
+    const opacity = Number(getComputedStyle(stage).opacity);
+    const renderedText = composite(text, background, text.alpha * opacity);
+    const lighter = Math.max(luminance(renderedText), luminance(background));
+    const darker = Math.min(luminance(renderedText), luminance(background));
+    return { contrast: (lighter + 0.05) / (darker + 0.05), opacity };
+  });
+  expect(result.opacity).toBe(1);
+  expect(result.contrast).toBeGreaterThanOrEqual(4.5);
+});
