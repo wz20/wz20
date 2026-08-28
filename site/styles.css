@@ -469,6 +469,11 @@ main > section {
   min-height: 390px;
 }
 
+.project-card [data-open-project] {
+  width: auto;
+  margin: 24px 0 0;
+}
+
 .project-card:nth-child(2) {
   margin-top: 66px;
 }
@@ -844,11 +849,37 @@ main > section {
 /* Task 5 can mount these WeUI structures without needing a second visual language. */
 .weui-half-screen-dialog,
 .weui-actionsheet {
+  position: fixed;
+  z-index: 200;
+  right: auto;
+  bottom: 0;
+  left: 50%;
+  width: min(720px, 100%);
+  max-height: min(86vh, 760px);
+  overflow-y: auto;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius) var(--radius) 0 0;
   background: var(--panel-solid);
   color: var(--paper);
   box-shadow: var(--shadow);
+  visibility: hidden;
+  transform: translate(-50%, 100%);
+}
+
+.weui-actionsheet {
+  width: min(560px, 100%);
+}
+
+.weui-half-screen-dialog.is-open,
+.weui-actionsheet.is-open {
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.weui-half-screen-dialog[hidden],
+.weui-actionsheet[hidden],
+.weui-toast[hidden] {
+  display: none !important;
 }
 
 .weui-half-screen-dialog__hd,
@@ -860,7 +891,25 @@ main > section {
 
 .weui-half-screen-dialog__title,
 .weui-actionsheet__title-text {
+  margin: 0;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.weui-half-screen-dialog__hd [data-close-project] {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--paper);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+#project-dialog-outcome {
+  margin: 22px 0 30px;
+  color: var(--muted);
+  line-height: 1.75;
 }
 
 .weui-actionsheet__cell,
@@ -877,6 +926,15 @@ main > section {
 }
 
 .weui-toast {
+  position: fixed;
+  z-index: 240;
+  top: 24px;
+  right: 24px;
+  left: auto;
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 14px 18px;
   border: 1px solid rgba(36, 216, 210, 0.38);
   border-radius: 18px;
   background: rgba(13, 28, 29, 0.96);
@@ -904,9 +962,20 @@ main > section {
 }
 
 .weui-tabbar__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px 4px;
   color: var(--muted);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  text-decoration: none;
   transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.weui-tabbar__item:hover,
+.weui-tabbar__item:focus-visible {
+  color: var(--paper);
 }
 
 .weui-tabbar__item.weui-bar__item_on {
