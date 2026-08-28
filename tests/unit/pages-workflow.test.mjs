@@ -35,10 +35,14 @@ const validateWorkflow = (source) => {
     branches: ["main"],
     paths: ["site/**", ".github/workflows/pages.yml"],
   });
+  const dispatch = triggers.workflow_dispatch;
   assert.ok(
-    triggers.workflow_dispatch === null
-      || (typeof triggers.workflow_dispatch === "object" && Object.keys(triggers.workflow_dispatch).length === 0),
-    "workflow_dispatch must not define inputs or other configuration",
+    dispatch === null
+      || (typeof dispatch === "object"
+        && !Array.isArray(dispatch)
+        && Object.getPrototypeOf(dispatch) === Object.prototype
+        && Object.keys(dispatch).length === 0),
+    "workflow_dispatch must be null or an empty plain mapping",
   );
 
   assert.deepEqual(parsed.permissions, {
@@ -141,6 +145,7 @@ test("rejects policy-breaking Pages workflow mutations", async () => {
     "  workflow_dispatch:\n",
     "  workflow_dispatch:\n    inputs:\n      target:\n        required: true\n        type: string\n",
   );
+  const dispatchSequence = source.replace("  workflow_dispatch:\n", "  workflow_dispatch: []\n");
 
   for (const [name, mutation] of [
     ["a root artifact path", source.replace("path: site", "path: .")],
@@ -156,5 +161,6 @@ test("rejects policy-breaking Pages workflow mutations", async () => {
     ["a preflight job permission override", preflightJobPermissions],
     ["a tag trigger", tagTrigger],
     ["workflow dispatch inputs", dispatchInputs],
+    ["a workflow dispatch sequence", dispatchSequence],
   ]) assert.throws(() => validateWorkflow(mutation), name);
 });
