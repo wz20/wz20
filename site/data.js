@@ -1,0 +1,6 @@
+export const PROJECTS = Object.freeze([
+  { id: "vox", title: "VOX Paper Collage Video", category: "视频生产系统", description: "自动生成 VOX 风格纸张拼贴视频的 Codex Skill。", outcome: "把素材准备、镜头编排与视频生产流程串成一条可复用管线。", status: "ACTIVE", repo: "https://github.com/wz20/create-vox-paper-collage-video", accent: "pink", tags: ["Codex Skill", "Video", "Automation"] },
+  { id: "illustrations", title: "Huajuan Illustrations", category: "视觉素材系统", description: "花卷猫咪极简插画素材库，用图像解释抽象技术概念。", outcome: "为文章配图、视觉隐喻、故事板与动画生产提供统一角色资产。", status: "GROWING", repo: "https://github.com/wz20/ian-huajuan-illustrations", accent: "yellow", tags: ["Illustration", "Storytelling", "SVG"] },
+  { id: "jinjing", title: "Jinjing Skill", category: "Agent 工具调用", description: "基于 Python 的路线规划 Skill，探索 AI 工具调用与自动化任务执行。", outcome: "把自然语言意图转成可检查的路线与工具执行结果。", status: "EXPERIMENT", repo: "https://github.com/wz20/jinjing-skill", accent: "cyan", tags: ["Python", "Agent", "Maps"] },
+  { id: "oauth2", title: "OAuth2 SSO Demo", category: "后端工程实践", description: "围绕 OAuth2、统一认证与 Spring 生态构建的后端实践项目。", outcome: "用可运行示例拆解 GitHub 登录、授权与单点登录流程。", status: "REFERENCE", repo: "https://github.com/wz20/OAuth2-sso-demo", accent: "paper", tags: ["Java", "Spring", "OAuth2"] },
+]);

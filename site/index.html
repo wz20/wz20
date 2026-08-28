@@ -8,8 +8,76 @@
   </head>
   <body>
     <a href="#main-content">跳到主要内容</a>
+    <header id="home" class="lab-hero" aria-labelledby="hero-title">
+      <div class="lab-shell lab-hero__grid">
+        <p class="lab-kicker">LAB STATUS · BUILDING</p>
+        <img class="lab-hero__mark" src="./assets/huajuan-mark.svg" alt="" width="320" height="320" />
+        <h1 id="hero-title"><span>花卷</span><span>AI 实验室</span></h1>
+        <p class="lab-hero__promise">把 AI 想法做成看得见、能运行、可以继续迭代的作品。</p>
+        <div class="lab-hero__actions">
+          <a class="weui-btn weui-btn_primary" href="#experiments">查看精选实验</a>
+          <a class="weui-btn weui-btn_default" href="https://github.com/wz20" target="_blank" rel="noopener noreferrer">返回 GitHub</a>
+        </div>
+      </div>
+    </header>
     <main id="main-content">
-      <h1>花卷 AI 实验室</h1>
+      <section id="console" class="lab-shell" aria-labelledby="console-title">
+        <p class="section-index">01 / LAB CONSOLE</p>
+        <h2 id="console-title">实验室正在运行</h2>
+        <div class="weui-cells lab-console">
+          <div class="weui-cell"><div class="weui-cell__bd"><p>BUILD</p><p>Java · Spring · AI Application</p></div><div class="weui-cell__ft"><span class="weui-badge">ACTIVE</span></div></div>
+          <div class="weui-cell"><div class="weui-cell__bd"><p>INTELLIGENCE</p><p>Agent · LangGraph · MCP</p></div><div class="weui-cell__ft"><span class="weui-badge">LEARNING</span></div></div>
+          <div class="weui-cell"><div class="weui-cell__bd"><p>EXPRESSION</p><p>Vibe Coding · Video · Visual Storytelling</p></div><div class="weui-cell__ft"><span class="weui-badge">MAKING</span></div></div>
+        </div>
+      </section>
+      <section id="experiments" aria-labelledby="experiments-title">
+        <div class="lab-shell">
+          <p class="section-index">02 / SELECTED EXPERIMENTS</p>
+          <h2 id="experiments-title">正在构建的作品</h2>
+        </div>
+        <div id="project-grid" class="project-grid lab-shell" aria-live="polite"></div>
+        <noscript>
+          <div class="static-projects">
+            <article data-static-project><h3>VOX Paper Collage Video</h3><a href="https://github.com/wz20/create-vox-paper-collage-video" target="_blank" rel="noopener noreferrer">查看项目</a></article>
+            <article data-static-project><h3>Huajuan Illustrations</h3><a href="https://github.com/wz20/ian-huajuan-illustrations" target="_blank" rel="noopener noreferrer">查看项目</a></article>
+            <article data-static-project><h3>Jinjing Skill</h3><a href="https://github.com/wz20/jinjing-skill" target="_blank" rel="noopener noreferrer">查看项目</a></article>
+            <article data-static-project><h3>OAuth2 SSO Demo</h3><a href="https://github.com/wz20/OAuth2-sso-demo" target="_blank" rel="noopener noreferrer">查看项目</a></article>
+          </div>
+        </noscript>
+      </section>
+      <section id="flow" class="lab-flow" aria-labelledby="flow-title">
+        <div class="lab-shell">
+          <p class="section-index">03 / HOW IDEAS SHIP</p>
+          <h2 id="flow-title">一个想法如何变成可见作品</h2>
+          <div class="weui-progress" aria-label="作品流程进度"><div class="weui-progress__bar"><div class="weui-progress__inner-bar" style="width:100%;transform:scaleX(.25);transform-origin:left center"></div></div></div>
+          <div class="flow-track">
+            <article class="flow-stage is-active" data-flow-stage="idea"><span>01</span><h3>想法</h3><p>先锁定真实问题、目标观众和可验证结果。</p></article>
+            <article class="flow-stage" data-flow-stage="agent"><span>02</span><h3>Agent</h3><p>把推理、记忆与步骤编排成可执行工作流。</p></article>
+            <article class="flow-stage" data-flow-stage="tools"><span>03</span><h3>工具</h3><p>连接代码、模型、MCP 与自动化生产能力。</p></article>
+            <article class="flow-stage" data-flow-stage="work"><span>04</span><h3>可见作品</h3><p>交付可以运行、演示、复用并继续迭代的结果。</p></article>
+          </div>
+        </div>
+      </section>
+      <section id="toolkit" class="lab-shell" aria-labelledby="toolkit-title">
+        <p class="section-index">04 / TOOLKIT</p>
+        <h2 id="toolkit-title">用工程构建，用智能连接，用视觉表达</h2>
+        <div class="toolkit-grid">
+          <article><p>BUILD</p><h3>Java Engineering</h3><p>Java · Spring Boot · MySQL · Redis · Docker</p></article>
+          <article><p>INTELLIGENCE</p><h3>Agent Systems</h3><p>LangChain · LangGraph · MCP · Prompt Engineering</p></article>
+          <article><p>EXPRESSION</p><h3>Creative Technology</h3><p>Vibe Coding · SVG · Motion · Video Automation</p></article>
+        </div>
+      </section>
+      <section id="contact" class="lab-shell lab-contact" aria-labelledby="contact-title">
+        <p class="section-index">05 / FIND HUAJUAN</p>
+        <h2 id="contact-title">一起把想法做出来</h2>
+        <p>GitHub 看项目，抖音看作品从想法到成片的过程。</p>
+        <button class="weui-btn weui-btn_primary" type="button" data-open-contact>联系花卷</button>
+      </section>
     </main>
+    <footer class="weui-footer">
+      <p class="weui-footer__links"><a class="weui-footer__link" href="https://github.com/wz20" target="_blank" rel="noopener noreferrer">GitHub · wz20</a></p>
+      <p class="weui-footer__text">Huajuan AI Lab · Ideas made visible</p>
+    </footer>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
