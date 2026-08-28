@@ -8,6 +8,7 @@ Date: 2026-08-28 (Asia/Shanghai)
 - Exact staged source/test tree checked before this record was written: `f81c36b2494dfbb80e70eddbcbd8b7830aa1571d`.
 - That tree contains `scripts/serve.mjs`, `site/`, and `tests/`; this verification document was intentionally written only after the checks. The documentation commit containing this record therefore did not exist when the checks ran and is not presented as the tested commit.
 - Review follow-up tested parent: `e68a5be4aeced08c58edd4ba189a743a4b19c7f4`; exact staged source/test tree after all four review repairs and before this document update: `3f06ded809974b1448b8d2e66ac5a8bac68376dd`. The later follow-up documentation commit likewise did not exist during those checks.
+- Server-test correctness follow-up tested parent: `706be601bf058e7a99d366d40bea7ccfc5ca3c4d`; exact staged source/test tree after the two P3 repairs and before this document update: `6266f922b1873cad3991612ef5b2875530377209`. The documentation commit created afterward is not represented as the tested source tree.
 
 ## Test-first evidence and root-cause repairs
 
@@ -57,6 +58,18 @@ The Task 7 review identified one P1 label-in-name defect, one P2 policy-coverage
 - Syntax: `node --check` passed for `scripts/serve.mjs`, `site/data.js`, `site/app.js`, `site/motion.js`, `playwright.config.js`, the three changed E2E files, and the two unit policy files. `git diff --cached --check` passed with no output.
 - Because server negotiation changed, the exact local Lighthouse audit was rerun. Lighthouse 13.4.1 wrote a fresh report at `2026-08-28T10:08:04.020Z`; the threshold command exited 0 with Performance `0.99` and Accessibility `1.00`. Final follow-up FCP was `1579.5060 ms`, LCP `1954.5060 ms`, TBT `0 ms`, and CLS `0.0009176536041691`.
 - Direct response checks observed `Vary: Accept-Encoding` with no `Content-Encoding` for `Accept-Encoding: gzip;q=0`, and both `Vary: Accept-Encoding` and `Content-Encoding: gzip` for `Accept-Encoding: br;q=0, *;q=0.5`.
+
+## Server-test correctness follow-up
+
+A fresh re-review found that permissive numeric conversion accepted malformed qvalues and that the integration test could accidentally connect to an unrelated process on fixed port 4173. Both issues were covered by failing tests before their repairs.
+
+- qvalue RED: `npm run test:unit` — 12 passed and 1 failed. The malformed-parameter case failed first on `gzip;q=.5`, which the old `Number()` conversion incorrectly enabled. The same table covers `1e-3`, four decimal digits, out-of-range `1.001`, a leading zero, unsupported parameters, duplicate q parameters, and a q parameter combined with another parameter. Valid boundaries cover plain `0`/`1`, `0.`/`1.`, positive values through three decimal digits, `0.000`, and `1.000`.
+- Isolation RED: after replacing fixed-port readiness with an exact-child IPC contract, `npm run test:unit` — 7 passed and 1 failed. The spawned child timed out because the old server neither honored an isolated ephemeral-port setting nor announced its bound port.
+- The server now applies the RFC-style qvalue grammar before numeric conversion: `0` with an optional decimal point and at most three digits, or `1` with an optional decimal point and at most three zeroes. Missing parameters retain the default quality 1; malformed, duplicate, or unsupported parameters resolve to quality 0 and cannot enable gzip.
+- The integration test forks the real server with `HUAJUAN_SERVER_PORT=0`. The operating system chooses the port; after `listen`, that exact child sends its PID and selected port over IPC. The test asserts the IPC PID equals the spawned PID, requests only the announced port, records premature `error`/`exit` immediately, treats missing readiness as a failure, and waits for the child to exit during cleanup. It cannot pass by reaching another process on 4173.
+- Focused GREEN: `npm run test:unit` — 14 passed, 0 failed. Fresh full `npm test` — 14 unit tests passed; 81 browser tests passed and the same 3 desktop-only cases were skipped in the mobile project.
+- Syntax: `node --check scripts/serve.mjs` and `node --check tests/unit/server-policy.test.mjs` passed. `git diff --cached --check` passed with no output.
+- Lighthouse was not rerun for this follow-up. Valid-client response behavior is unchanged: default startup remains `127.0.0.1:4173`, standard `gzip` and valid qvalue/wildcard negotiation remain covered and green, and the ephemeral port plus IPC readiness path activates only under the test-specific environment/IPC channel. The only HTTP behavior change is rejection of malformed or unsupported q syntax. The most recent measured audit therefore remains the previous fresh report at `2026-08-28T10:08:04.020Z` (Performance `0.99`, Accessibility `1.00`); it is not presented as a new measurement for this follow-up.
 
 ## Preserved runtime policies
 

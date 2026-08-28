@@ -5,7 +5,10 @@ import { extname, join, resolve, sep } from "node:path";
 import { createGzip } from "node:zlib";
 
 const root = resolve("site");
-const port = 4173;
+const configuredPort = Number(process.env.HUAJUAN_SERVER_PORT ?? 4173);
+if (!Number.isInteger(configuredPort) || configuredPort < 0 || configuredPort > 65535) {
+  throw new Error("HUAJUAN_SERVER_PORT must be an integer from 0 to 65535");
+}
 const contentTypes = new Map([
   [".html", "text/html; charset=utf-8"],
   [".css", "text/css; charset=utf-8"],
@@ -22,16 +25,19 @@ function acceptsGzip(header = "") {
     const [rawEncoding, ...parameters] = entry.trim().split(";");
     const encoding = rawEncoding.trim().toLowerCase();
     if (!encoding) continue;
-    const qualityParameter = parameters.find((parameter) => /^\s*q\s*=/i.test(parameter));
-    const parsedQuality = qualityParameter ? Number(qualityParameter.split("=")[1]?.trim()) : 1;
-    const quality = Number.isFinite(parsedQuality) && parsedQuality >= 0 && parsedQuality <= 1 ? parsedQuality : 0;
+    const qualityMatch = parameters.length === 0
+      ? ["", "1"]
+      : parameters.length === 1
+        ? parameters[0].trim().match(/^q=(0(?:\.\d{0,3})?|1(?:\.0{0,3})?)$/i)
+        : null;
+    const quality = qualityMatch ? Number(qualityMatch[1]) : 0;
     if (encoding === "gzip") gzipQuality = quality;
     if (encoding === "*") wildcardQuality = quality;
   }
   return (gzipQuality ?? wildcardQuality ?? 0) > 0;
 }
 
-createServer(async (request, response) => {
+const server = createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
     let filePath = resolve(root, `.${pathname}`);
@@ -56,4 +62,11 @@ createServer(async (request, response) => {
   } catch {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Not found");
   }
-}).listen(port, "127.0.0.1");
+});
+
+server.listen(configuredPort, "127.0.0.1", () => {
+  const address = server.address();
+  if (process.send && address && typeof address === "object") {
+    process.send({ type: "huajuan:server-ready", pid: process.pid, port: address.port });
+  }
+});
