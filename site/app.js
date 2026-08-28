@@ -1,5 +1,4 @@
 import { PROJECTS } from "./data.js";
-import { initMotion } from "./motion.js";
 
 const OVERLAY_TRANSITION_EVENT = "huajuan:overlay-transition";
 const overlayMotionEvents = new EventTarget();
@@ -55,11 +54,6 @@ export function renderProjects(projects, target) {
 }
 
 const projectGrid = document.querySelector("#project-grid");
-if (projectGrid) {
-  renderProjects(PROJECTS, projectGrid);
-  document.documentElement.dataset.enhanced = "true";
-}
-
 const projectDialog = document.querySelector("#project-dialog");
 const contactSheet = document.querySelector("#contact-sheet");
 const feedbackToast = document.querySelector("#feedback-toast");
@@ -268,11 +262,35 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-const motionController = initMotion({ overlayEventTarget: overlayMotionEvents });
+let motionController = null;
+let pageHidden = false;
+
+function initializeCore() {
+  if (!projectGrid) return false;
+  renderProjects(PROJECTS, projectGrid);
+  document.querySelectorAll("[data-static-fallback], [data-static-contact-fallback]").forEach((fallback) => {
+    fallback.hidden = true;
+  });
+  document.documentElement.dataset.enhanced = "true";
+  return true;
+}
+
+async function initializeMotion() {
+  try {
+    const { initMotion } = await import("./motion.js");
+    if (pageHidden) return;
+    motionController = initMotion({ overlayEventTarget: overlayMotionEvents });
+  } catch {
+    document.documentElement.dataset.motion = "unavailable";
+    document.documentElement.dataset.motionLifecycle = "unavailable";
+  }
+}
 
 function handlePageHide() {
+  pageHidden = true;
   window.removeEventListener("pagehide", handlePageHide);
-  motionController.destroy();
+  motionController?.destroy();
 }
 
 window.addEventListener("pagehide", handlePageHide);
+if (initializeCore()) void initializeMotion();

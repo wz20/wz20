@@ -69,3 +69,27 @@ test("keeps inactive flow copy at WCAG AA contrast", async ({ page }) => {
   expect(result.opacity).toBe(1);
   expect(result.contrast).toBeGreaterThanOrEqual(4.5);
 });
+
+test("keeps copy-failure feedback readable and contained at 320px", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", { value: undefined, configurable: true });
+    document.execCommand = () => { throw new Error("copy denied"); };
+  });
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "联系花卷" }).click();
+  await page.getByRole("button", { name: "复制抖音名称" }).click();
+
+  const toast = page.locator("#feedback-toast");
+  await expect(toast).toContainText("无法复制，请手动搜索：花卷AI实验室");
+  const layout = await toast.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return {
+      pageWidth: document.documentElement.scrollWidth,
+      viewportWidth: innerWidth,
+      toastFits: box.left >= 0 && box.right <= innerWidth && box.top >= 0 && box.bottom <= innerHeight,
+      textFits: element.scrollWidth <= element.clientWidth + 1,
+    };
+  });
+  expect(layout).toEqual({ pageWidth: 320, viewportWidth: 320, toastFits: true, textFits: true });
+});

@@ -109,3 +109,36 @@ Whole-branch review found that the normal-motion cat orbit used an infinite GSAP
 - Recheck external GitHub/Douyin destinations and the public profile link from the deployed origin.
 - Perform the planned production browser/device review after Pages publication. No production URL, workflow run, merge, or deployment was executed as part of this local Task 8 record.
 - For Task 8, remote push/PR creation, GitHub Pages enablement, production deployment, live URL validation, production browser review, and production Lighthouse remain pending the controller's release gate.
+
+## Whole-branch progressive-enhancement hardening
+
+The whole-branch review after `6a0f5233aa89b7408233c75723ae80d3b6564326` found that the complete static projects and contact destinations existed only inside `noscript`. A browser with JavaScript enabled but a failed `app.js`, `data.js`, or statically imported `motion.js` therefore lost project content or usable contact paths. The repair was covered by failing tests before implementation and keeps the static/local runtime and prior accessibility/motion policies.
+
+- The complete four-card project fallback and GitHub/Douyin contact links now live in ordinary HTML and are visible by default. Core initialization renders the enhanced grid, binds the existing interactions, then hides both fallback regions with the native `hidden` state. If the core module or its data dependency fails, the readable linked fallback remains; after success, hidden fallback content is absent from the accessibility tree, so project headings are not duplicated.
+- `app.js` no longer statically imports `motion.js`. It completes project rendering and event binding first, then dynamically imports motion. An import or initialization failure sets `data-motion="unavailable"`; the existing immediate overlay transition path continues to open/close the project dialog and ActionSheet without animation.
+- `#main-content` now has `tabindex="-1"`; the keyboard regression activates the skip link and verifies focus moves to the main landmark.
+- The 320 × 844 regression exercises the copy-denial path, long failure Toast text, viewport containment, text containment, and document width. It passed before and after the progressive-enhancement repair, so no unnecessary Toast CSS change was retained.
+- Playwright now sets `reuseExistingServer: false`, making a pre-existing 4173 process an error instead of a possible test source. The server integration suite independently continues to fork its exact child on an OS-selected ephemeral port and verify its PID over IPC.
+- Server integration coverage now verifies root directory index serving, 404 for a directory without an index and a missing file, encoded traversal denial, all site MIME types, and the absence of explicit cache metadata. The directory-without-index RED exposed an unhandled `createReadStream` error that terminated the child; the server now reads the resolved file before writing a 200 response, so missing index files reach the existing 404 path without crashing.
+- `site/assets/fonts/OFL.txt` content is unchanged; only its Git mode was normalized from `100755` to `100644`.
+
+### RED/GREEN evidence
+
+- Focused unit/server RED: `node --test tests/unit/harness-policy.test.mjs tests/unit/server-policy.test.mjs` reported 6 passed and 7 failed. The failures covered reused Playwright servers, executable license mode, the missing directory index crash, and subsequent child connection failures.
+- The first focused Playwright attempt did not execute product assertions because macOS denied Chromium Mach-port registration in the restricted sandbox. The permitted local rerun is the RED product evidence: 38 passed and 6 failed across desktop/mobile, specifically the absent ordinary-HTML fallback, static motion import preventing core initialization, and skip-link focus not reaching main.
+- Focused GREEN: the same unit/server command passed 13/13. `npm run test:e2e -- tests/e2e/progressive-enhancement.spec.js tests/e2e/accessibility.spec.js tests/e2e/layout.spec.js` passed 44/44.
+- Lockfile install check: `npm ci --ignore-scripts` installed 125 packages, audited 126, and reported 0 vulnerabilities.
+- Fresh full regression after that clean install: `npm test` passed 23 unit tests; Playwright passed 90 and skipped the 4 mobile executions of desktop-only motion cases out of 94, with 0 failures.
+- JavaScript syntax: `node --check` passed with no output for the server, all three site modules, Playwright config, the three changed E2E files, and the two changed unit policy files (10 files).
+- YAML semantics: the pinned `yaml` parser reported `YAML semantics valid` and confirmed `jobs.deploy.steps`; the complete workflow semantics also passed in the 23-test unit suite.
+- File mode: the staged index reported `100644` and the filesystem reported `-rw-r--r-- 644` for `site/assets/fonts/OFL.txt`.
+- Patch-scope hygiene: working-tree `git diff --check` and source/test staged `git diff --cached --check` both passed with no output.
+- Base-to-head scope is intentionally not described as warning-free. `git diff --check main...6a0f5233aa89b7408233c75723ae80d3b6564326` reports only 16 intentional Markdown hard-break lines in the implementation plan, 2 intentional Markdown hard-break lines in the design spec, preserved upstream line-ending/spacing across the 93-line OFL license, and preserved upstream banner/EOF formatting in the three vendored GSAP files. This hardening change does not rewrite those upstream or authoring-format contents; its working/staged patches are clean.
+
+### Fresh local audit and tested identity
+
+- Because core script sequencing and valid-file server delivery changed, Lighthouse was rerun rather than inheriting the prior score. The exact local audit wrote `/private/tmp/huajuan-lighthouse-whole-review.json` with fetch time `2026-08-28T11:08:27.134Z`. Threshold extraction exited 0: Performance `0.98`, Accessibility `1.00`, FCP `1727.3148 ms`, LCP `1952.3148 ms`, TBT `0 ms`, CLS `0`.
+- The Lighthouse server and isolated audit Chrome were stopped after the measurement. No remote action, Pages deployment, or production-origin check was performed.
+- Tested parent: `6a0f5233aa89b7408233c75723ae80d3b6564326`.
+- Exact staged source/test tree after the checks and before this verification-document update: `441b5346c14045427f23c86544b13bbdee6f0e14`. The later documentation commit did not exist during testing and is not claimed as the tested identity.
+- The earlier required manual browser-harness review remains the recorded one isolated local unauthenticated Chromium CDP session at 390, 768, and 1440. Authorization to control the existing authenticated Chrome was not available and that profile was not used; this follow-up added deterministic automated failure-path and 320px coverage rather than claiming a second manual pass.

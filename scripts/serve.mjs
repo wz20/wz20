@@ -1,5 +1,4 @@
-import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, resolve, sep } from "node:path";
 import { createGzip } from "node:zlib";
@@ -46,19 +45,21 @@ const server = createServer(async (request, response) => {
       return;
     }
     if ((await stat(filePath)).isDirectory()) filePath = join(filePath, "index.html");
+    const body = await readFile(filePath);
     const extension = extname(filePath);
     const headers = { "Content-Type": contentTypes.get(extension) ?? "application/octet-stream" };
-    const source = createReadStream(filePath);
     const compressible = compressibleExtensions.has(extension);
     if (compressible) headers.Vary = "Accept-Encoding";
     if (compressible && acceptsGzip(request.headers["accept-encoding"])) {
       headers["Content-Encoding"] = "gzip";
       response.writeHead(200, headers);
-      source.pipe(createGzip()).pipe(response);
+      const gzip = createGzip();
+      gzip.pipe(response);
+      gzip.end(body);
       return;
     }
     response.writeHead(200, headers);
-    source.pipe(response);
+    response.end(body);
   } catch {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Not found");
   }

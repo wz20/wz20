@@ -4,16 +4,21 @@ import { once } from "node:events";
 import { request } from "node:http";
 import test from "node:test";
 
-function fetchAsset(port, acceptEncoding) {
+function fetchAsset(port, acceptEncoding, path = "/styles.css") {
   return new Promise((resolve, reject) => {
     const req = request({
       hostname: "127.0.0.1",
       port,
-      path: "/styles.css",
+      path,
       headers: { "Accept-Encoding": acceptEncoding },
     }, (response) => {
-      response.resume();
-      response.on("end", () => resolve({ headers: response.headers, statusCode: response.statusCode }));
+      const chunks = [];
+      response.on("data", (chunk) => chunks.push(chunk));
+      response.on("end", () => resolve({
+        body: Buffer.concat(chunks),
+        headers: response.headers,
+        statusCode: response.statusCode,
+      }));
     });
     req.on("error", reject);
     req.end();
@@ -117,6 +122,48 @@ test("serves encoding policy from its own isolated child", async (t) => {
         const { headers } = await fetchAsset(port, acceptEncoding);
         assert.equal(headers["content-encoding"], undefined, acceptEncoding);
         assert.equal(headers.vary, "Accept-Encoding", acceptEncoding);
+      }
+    });
+
+    await t.test("serves the root index and returns 404 for missing directories and files", async () => {
+      const root = await fetchAsset(port, "identity", "/");
+      assert.equal(root.statusCode, 200);
+      assert.equal(root.headers["content-type"], "text/html; charset=utf-8");
+      assert.match(root.body.toString(), /花卷 AI 实验室/);
+
+      for (const path of ["/assets/", "/missing-file.txt"]) {
+        const missing = await fetchAsset(port, "identity", path);
+        assert.equal(missing.statusCode, 404, path);
+        assert.equal(missing.headers["content-type"], "text/plain; charset=utf-8", path);
+      }
+    });
+
+    await t.test("denies encoded traversal outside the site root", async () => {
+      const response = await fetchAsset(port, "identity", "/..%2fpackage.json");
+      assert.equal(response.statusCode, 403);
+      assert.equal(response.body.toString(), "Forbidden");
+    });
+
+    await t.test("serves every site MIME type from the isolated child", async () => {
+      for (const [path, contentType] of [
+        ["/index.html", "text/html; charset=utf-8"],
+        ["/styles.css", "text/css; charset=utf-8"],
+        ["/app.js", "text/javascript; charset=utf-8"],
+        ["/assets/huajuan-mark.svg", "image/svg+xml"],
+        ["/assets/fonts/IBMPlexMono-SemiBold.woff2", "font/woff2"],
+      ]) {
+        const response = await fetchAsset(port, "identity", path);
+        assert.equal(response.statusCode, 200, path);
+        assert.equal(response.headers["content-type"], contentType, path);
+      }
+    });
+
+    await t.test("does not attach explicit cache metadata", async () => {
+      for (const path of ["/", "/styles.css", "/missing-file.txt"]) {
+        const { headers } = await fetchAsset(port, "identity", path);
+        for (const name of ["cache-control", "expires", "etag", "last-modified"]) {
+          assert.equal(headers[name], undefined, `${path} ${name}`);
+        }
       }
     });
   } finally {

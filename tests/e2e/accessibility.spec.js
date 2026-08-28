@@ -28,7 +28,10 @@ test("has one visible h1, named controls, and no console errors", async ({ page 
 test("supports keyboard navigation and Escape dismissal", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("link", { name: "跳到主要内容" })).toBeFocused();
+  const skipLink = page.getByRole("link", { name: "跳到主要内容" });
+  await expect(skipLink).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#main-content")).toBeFocused();
   await page.getByRole("button", { name: /查看.*详情/ }).first().focus();
   await page.keyboard.press("Enter");
   await expect(page.locator("#project-dialog")).toBeVisible();

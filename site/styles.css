@@ -581,6 +581,11 @@ main > section {
   margin: 0 auto;
 }
 
+[data-static-fallback][hidden],
+[data-static-contact-fallback][hidden] {
+  display: none !important;
+}
+
 .static-projects article {
   padding: 28px;
   border: 1px solid var(--line);

@@ -36,7 +36,7 @@
         </div>
       </div>
     </header>
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section id="console" class="lab-shell" aria-labelledby="console-title">
         <p class="section-index">01 / LAB CONSOLE</p>
         <h2 id="console-title">实验室正在运行</h2>
@@ -52,8 +52,7 @@
           <h2 id="experiments-title">正在构建的作品</h2>
         </div>
         <div id="project-grid" class="project-grid lab-shell" aria-live="polite"></div>
-        <noscript>
-          <div class="static-projects">
+        <div class="static-projects" data-static-fallback>
             <article data-static-project>
               <p>ACTIVE · 视频生产系统</p><h3>VOX Paper Collage Video</h3>
               <p>自动生成 VOX 风格纸张拼贴视频的 Codex Skill。</p>
@@ -82,8 +81,7 @@
               <p>标签：Java · Spring · OAuth2</p>
               <a href="https://github.com/wz20/OAuth2-sso-demo" target="_blank" rel="noopener noreferrer" aria-label="查看项目：OAuth2 SSO Demo（GitHub）">查看项目</a>
             </article>
-          </div>
-        </noscript>
+        </div>
       </section>
       <section id="flow" class="lab-flow" aria-labelledby="flow-title">
         <div class="lab-shell">
@@ -112,12 +110,10 @@
         <h2 id="contact-title">一起把想法做出来</h2>
         <p>GitHub 看项目，抖音看作品从想法到成片的过程。</p>
         <button class="weui-btn weui-btn_primary" type="button" data-open-contact>联系花卷</button>
-        <noscript>
-          <p class="no-script-contact">
-            <a href="https://github.com/wz20" target="_blank" rel="noopener noreferrer">GitHub · wz20</a>
-            <a href="https://www.douyin.com/search/%E8%8A%B1%E5%8D%B7AI%E5%AE%9E%E9%AA%8C%E5%AE%A4" target="_blank" rel="noopener noreferrer">在抖音搜索花卷AI实验室</a>
-          </p>
-        </noscript>
+        <p class="no-script-contact" data-static-contact-fallback>
+          <a href="https://github.com/wz20" target="_blank" rel="noopener noreferrer">GitHub · wz20</a>
+          <a href="https://www.douyin.com/search/%E8%8A%B1%E5%8D%B7AI%E5%AE%9E%E9%AA%8C%E5%AE%A4" target="_blank" rel="noopener noreferrer">在抖音搜索花卷AI实验室</a>
+        </p>
       </section>
     </main>
     <div id="project-dialog" class="weui-half-screen-dialog" role="dialog" aria-modal="true" aria-labelledby="project-dialog-title" tabindex="-1" data-motion-phase="closed" hidden>
