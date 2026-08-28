@@ -27,6 +27,8 @@ export function initMotion({
   const ownedAnimations = new Set();
   const ownedTriggers = new Set();
   const visibilityPaused = new Set();
+  const visibilityResumeGuards = new Map();
+  const visibilitySynchronizers = new Set();
 
   function ownAnimation(animation) {
     if (animation) ownedAnimations.add(animation);
@@ -36,6 +38,7 @@ export function initMotion({
   function forgetAnimation(animation) {
     if (!animation) return;
     visibilityPaused.delete(animation);
+    visibilityResumeGuards.delete(animation);
     ownedAnimations.delete(animation);
   }
 
@@ -139,6 +142,40 @@ export function initMotion({
           alignOrigin: [0.5, 0.5],
         },
       }));
+      const hero = document.querySelector("#home");
+      const orbiter = document.querySelector("#cat-orbiter");
+      let heroInView = false;
+
+      function synchronizeOrbitVisibility() {
+        if (branchDestroyed || !orbiter) return;
+        const shouldRun = heroInView && !document.hidden;
+        if (shouldRun) orbit.resume();
+        else orbit.pause();
+        orbiter.dataset.orbitState = shouldRun ? "running" : "paused";
+      }
+
+      if (hero && orbiter) {
+        const heroVisibilityTrigger = branchTrigger(ScrollTrigger.create({
+          trigger: hero,
+          start: "top bottom",
+          end: "bottom top",
+          onToggle(self) {
+            heroInView = self.isActive;
+            synchronizeOrbitVisibility();
+          },
+        }));
+        heroInView = heroVisibilityTrigger.isActive;
+        visibilityResumeGuards.set(orbit, () => heroInView && !document.hidden && !branchDestroyed);
+        visibilitySynchronizers.add(synchronizeOrbitVisibility);
+        synchronizeOrbitVisibility();
+        branchCleanups.push(() => {
+          visibilitySynchronizers.delete(synchronizeOrbitVisibility);
+          visibilityResumeGuards.delete(orbit);
+          orbiter.removeAttribute("data-orbit-state");
+        });
+      } else {
+        orbit.pause();
+      }
 
       const projectTriggers = ScrollTrigger.batch(".project-card", {
         start: "top 88%",
@@ -369,13 +406,16 @@ export function initMotion({
           visibilityPaused.add(animation);
         }
       }
+      for (const synchronize of visibilitySynchronizers) synchronize();
       return;
     }
+    ScrollTrigger.refresh();
     for (const animation of visibilityPaused) {
-      if (ownedAnimations.has(animation)) animation.resume();
+      const mayResume = visibilityResumeGuards.get(animation);
+      if (ownedAnimations.has(animation) && (!mayResume || mayResume())) animation.resume();
     }
     visibilityPaused.clear();
-    ScrollTrigger.refresh();
+    for (const synchronize of visibilitySynchronizers) synchronize();
   }
 
   document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -391,6 +431,8 @@ export function initMotion({
       ownedTriggers.clear();
       ownedAnimations.clear();
       visibilityPaused.clear();
+      visibilityResumeGuards.clear();
+      visibilitySynchronizers.clear();
       root.dataset.motionLifecycle = "destroyed";
     },
   };

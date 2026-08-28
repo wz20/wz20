@@ -1,5 +1,22 @@
 import { expect, test } from "@playwright/test";
 
+async function readOrbitState(page) {
+  return page.evaluate(() => {
+    const orbiter = document.querySelector("#cat-orbiter");
+    const orbit = window.gsap
+      ?.getTweensOf(orbiter)
+      .find((animation) => animation.repeat() === -1);
+    return {
+      state: orbiter?.dataset.orbitState ?? null,
+      paused: orbit?.paused() ?? null,
+      heroTriggerCount: window.ScrollTrigger
+        ?.getAll()
+        .filter((trigger) => trigger.trigger === document.querySelector("#home"))
+        .length ?? 0,
+    };
+  });
+}
+
 test("initializes the full motion system without hiding the hero", async ({ page }) => {
   await page.goto("/");
 
@@ -9,6 +26,65 @@ test("initializes the full motion system without hiding the hero", async ({ page
   await expect(page.locator("#cat-orbiter")).toHaveCount(1);
 });
 
+test("pauses the cat orbit offscreen and resumes only for a visible hero and document", async ({ page, isMobile }) => {
+  test.skip(isMobile, "desktop exercises the normal hero visibility lifecycle");
+  await page.goto("/");
+
+  await expect.poll(() => readOrbitState(page)).toEqual({
+    state: "running",
+    paused: false,
+    heroTriggerCount: 1,
+  });
+
+  await page.locator("#experiments").scrollIntoViewIfNeeded();
+  await expect.poll(() => readOrbitState(page)).toEqual({
+    state: "paused",
+    paused: true,
+    heroTriggerCount: 1,
+  });
+
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await page.evaluate(() => {
+    delete document.hidden;
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect.poll(() => readOrbitState(page)).toEqual({
+    state: "paused",
+    paused: true,
+    heroTriggerCount: 1,
+  });
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => readOrbitState(page)).toEqual({
+    state: "running",
+    paused: false,
+    heroTriggerCount: 1,
+  });
+
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect.poll(() => readOrbitState(page)).toEqual({
+    state: "paused",
+    paused: true,
+    heroTriggerCount: 1,
+  });
+
+  await page.evaluate(() => {
+    delete document.hidden;
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect.poll(() => readOrbitState(page)).toEqual({
+    state: "running",
+    paused: false,
+    heroTriggerCount: 1,
+  });
+});
+
 test("shows final content and bypasses pinned or delayed motion when reduced motion is requested", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
@@ -16,6 +92,11 @@ test("shows final content and bypasses pinned or delayed motion when reduced mot
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.motion)).toBe("reduced");
   await expect(page.locator("#hero-title")).toBeVisible();
   await expect(page.locator(".pin-spacer")).toHaveCount(0);
+  await expect(page.locator("#cat-orbiter")).not.toHaveAttribute("data-orbit-state", /.+/);
+  expect(await page.evaluate(() => window.ScrollTrigger
+    .getAll()
+    .filter((trigger) => trigger.trigger === document.querySelector("#home"))
+    .length)).toBe(0);
 
   const trigger = page.locator("[data-open-project]").first();
   await trigger.click();
@@ -31,6 +112,7 @@ test("keeps overlays immediate and interactive when GSAP is unavailable", async 
 
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.motion)).toBe("unavailable");
   await expect(page.locator("#hero-title")).toBeVisible();
+  await expect(page.locator("#cat-orbiter")).not.toHaveAttribute("data-orbit-state", /.+/);
 
   const trigger = page.getByRole("button", { name: "联系花卷" });
   await trigger.click();
@@ -129,6 +211,12 @@ test("enables bounded desktop pointer motion and removes owned effects on pagehi
   await expect(card).toHaveAttribute("data-motion-tilt", "idle");
   await expect(page.locator(".pointer-spotlight")).toHaveAttribute("data-pointer-state", "idle");
   await expect(page.locator(".lab-hero__promise")).toBeVisible();
+  await expect(page.locator("#cat-orbiter")).not.toHaveAttribute("data-orbit-state", /.+/);
+  await expect.poll(() => readOrbitState(page)).toEqual({
+    state: null,
+    paused: null,
+    heroTriggerCount: 0,
+  });
   await expect.poll(() => page.locator(".lab-hero__promise").evaluate((element) => ({
     opacity: getComputedStyle(element).opacity,
     transform: getComputedStyle(element).transform,
