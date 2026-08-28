@@ -200,8 +200,9 @@ README 的精选项目与 `data.js` 人工保持一致，不增加构建步骤�
 ### 11.3 发布
 
 - GitHub Actions 仅在 `main` 的站点相关文件变化时构建并部署。
-- 部署成功后检查线上 Pages URL，再更新 README 主按钮指向。
-- 通过 Pull Request 合并到 `main`，不直接覆盖现有主页。
+- 第一阶段 Pull Request 只合并动态站点、依赖、测试和 Pages 工作流；合并后启用并验证线上 Pages URL。
+- 第二阶段 Pull Request 再合并 README 与 README 专用 SVG，确保“进入实验室”按钮首次出现在主页时目标地址已经可用。
+- 两个阶段都通过 Pull Request 合并到 `main`，不直接覆盖现有主页。
 
 ## 12. 交付结果
 
