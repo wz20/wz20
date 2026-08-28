@@ -85,6 +85,7 @@ A fresh re-review found that permissive numeric conversion accepted malformed qv
 - Full local regression: `npm test` passed with 15 unit tests and 81 Playwright tests; 3 desktop-only motion cases were skipped for the mobile project. The first sandboxed browser launch was blocked by macOS Mach-port permissions before any test executed; the same command completed successfully in the permitted local process context and is the recorded result.
 - YAML structural validation: `ruby -e 'require "yaml"; YAML.load_file(ARGV.fetch(0)); puts "YAML syntax valid (Ruby Psych)"' .github/workflows/pages.yml` printed `YAML syntax valid (Ruby Psych)`.
 - `git diff --check` passed with no output. This validates the local workflow definition only; it does not assert a GitHub Actions run or deployment.
+- Policy-test follow-up: `17cdabee08515479527ff297043bbeecad59cc7c` replaced whole-file token checks with indentation-scoped workflow blocks. RED mutation coverage showed the prior validator accepted a duplicate `actions/upload-pages-artifact@v4` step. GREEN rejects a non-`site` artifact path, duplicate upload, wrong `github-pages` environment, wrong `pages` concurrency group, and configuration moved before tests; it also requires the complete `npm ci` → Chromium install → `npm test` → configure → upload → deploy order. Focused policy tests passed 2/2; a fresh full `npm test` passed 16 unit tests and 81 Playwright tests with the same 3 expected mobile skips. YAML parsing, JavaScript syntax checking, and diff checks passed.
 
 ## Production-only remaining checks
 
