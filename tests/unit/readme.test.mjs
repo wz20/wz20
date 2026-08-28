@@ -8,12 +8,13 @@ const heroUrls = [
   new URL("../../assets/readme-hero-light.svg", import.meta.url),
 ];
 const liveLabUrl = "https://wz20.github.io/wz20/";
-const approvedRepos = [
-  "create-vox-paper-collage-video",
-  "ian-huajuan-illustrations",
-  "jinjing-skill",
-  "OAuth2-sso-demo",
+const projectSnapshot = [
+  { repo: "OAuth2-sso-demo", stars: 7 },
+  { repo: "create-vox-paper-collage-video", stars: 2 },
+  { repo: "ian-huajuan-illustrations", stars: 1 },
+  { repo: "jinjing-skill", stars: 1 },
 ];
+const approvedRepos = projectSnapshot.map(({ repo }) => repo);
 
 const occurrences = (source, literal) => source.split(literal).length - 1;
 
@@ -47,12 +48,19 @@ test("keeps the exact identity-first section order and primary copy", async () =
   assert.ok(readme.indexOf("## 你好，我是花卷") < readme.indexOf("github-readme-stats.vercel.app"));
 });
 
-test("links each approved project exactly once and no other project destination", async () => {
+test("orders approved projects by the star snapshot without duplicating destinations", async () => {
   const readme = await readFile(readmeUrl, "utf8");
   const selectedWork = readme.slice(readme.indexOf("## 精选实验"), readme.indexOf("## 当前研究"));
   const destinations = [...selectedWork.matchAll(/href="(https:\/\/github\.com\/wz20\/[^\"]+)"/g)].map(([, href]) => href);
 
   assert.deepEqual(destinations, approvedRepos.map((repo) => `https://github.com/wz20/${repo}`));
+  const actualStars = destinations.map((href) => projectSnapshot.find(({ repo }) => href.endsWith(`/${repo}`))?.stars);
+  assert.deepEqual(actualStars, [7, 2, 1, 1]);
+  assert.ok(actualStars.every((stars, index) => index === 0 || actualStars[index - 1] >= stars));
+  assert.deepEqual(destinations.slice(-2), [
+    "https://github.com/wz20/ian-huajuan-illustrations",
+    "https://github.com/wz20/jinjing-skill",
+  ]);
   for (const repo of approvedRepos) assert.equal(occurrences(readme, `https://github.com/wz20/${repo}`), 1);
 });
 

@@ -23,26 +23,26 @@
 <table>
   <tr>
     <td width="50%" valign="top">
+      <h3>🔐 OAuth2 SSO Demo</h3>
+      <p>用可运行示例拆解 GitHub 登录、OAuth2 授权与单点登录流程。</p>
+      <a href="https://github.com/wz20/OAuth2-sso-demo">查看项目 →</a>
+    </td>
+    <td width="50%" valign="top">
       <h3>🎬 VOX Paper Collage Video</h3>
       <p>自动生成 VOX 风格纸张拼贴视频，把素材、镜头与生产流程串成可复用管线。</p>
       <a href="https://github.com/wz20/create-vox-paper-collage-video">查看项目 →</a>
     </td>
+  </tr>
+  <tr>
     <td width="50%" valign="top">
       <h3>🐱 Huajuan Illustrations</h3>
       <p>花卷猫咪极简插画素材库，用统一角色资产解释抽象技术概念。</p>
       <a href="https://github.com/wz20/ian-huajuan-illustrations">查看项目 →</a>
     </td>
-  </tr>
-  <tr>
     <td width="50%" valign="top">
       <h3>🧭 Jinjing Skill</h3>
       <p>基于 Python 的路线规划 Skill，把自然语言意图转成可检查的工具执行结果。</p>
       <a href="https://github.com/wz20/jinjing-skill">查看项目 →</a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🔐 OAuth2 SSO Demo</h3>
-      <p>用可运行示例拆解 GitHub 登录、OAuth2 授权与单点登录流程。</p>
-      <a href="https://github.com/wz20/OAuth2-sso-demo">查看项目 →</a>
     </td>
   </tr>
 </table>
