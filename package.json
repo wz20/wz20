@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.62.1",
-    "lighthouse": "13.4.1"
+    "lighthouse": "13.4.1",
+    "yaml": "2.9.0"
   }
 }

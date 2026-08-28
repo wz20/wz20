@@ -1,120 +1,95 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { parseDocument } from "yaml";
 
 const workflowUrl = new URL("../../.github/workflows/pages.yml", import.meta.url);
 
 const workflow = () => readFile(workflowUrl, "utf8");
 
-const indentation = (line) => line.match(/^ */)[0].length;
-
-const block = (source, indent, key) => {
-  const lines = source.split(/\r?\n/);
-  const header = `${" ".repeat(indent)}${key}:`;
-  const start = lines.findIndex((line) => line === header);
-  assert.notEqual(start, -1, `missing ${key} block at indentation ${indent}`);
-
-  let end = start + 1;
-  while (end < lines.length && (!lines[end].trim() || indentation(lines[end]) > indent)) end += 1;
-  return lines.slice(start, end);
-};
-
-const scalar = (lines, indent, key) => {
-  const prefix = `${" ".repeat(indent)}${key}: `;
-  const matches = lines.filter((line) => line.startsWith(prefix));
-  assert.equal(matches.length, 1, `expected one ${key} value at indentation ${indent}`);
-  return matches[0].slice(prefix.length);
-};
-
-const deployJob = (source) => {
-  const jobs = block(source, 0, "jobs");
-  return block(jobs.join("\n"), 2, "deploy");
-};
-
-const steps = (job) => {
-  const lines = block(job.join("\n"), 4, "steps");
-  const starts = lines.flatMap((line, index) => line.startsWith("      - ") ? [index] : []);
-  assert.ok(starts.length > 0, "workflow must declare deployment steps");
-  return starts.map((start, index) => lines.slice(start, starts[index + 1] ?? lines.length));
-};
-
-const stepValue = (step, key) => {
-  const prefix = `        ${key}: `;
-  const matches = step.filter((line) => line.startsWith(prefix));
-  assert.ok(matches.length <= 1, `expected at most one ${key} value in a workflow step`);
-  return matches[0]?.slice(prefix.length);
+const record = (value, label) => {
+  assert.ok(value && typeof value === "object" && !Array.isArray(value), `expected ${label} to be a mapping`);
+  return value;
 };
 
 const exactlyOne = (items, label) => {
-  assert.equal(items.length, 1, `expected exactly one ${label} step`);
+  assert.equal(items.length, 1, `expected exactly one ${label}`);
   return items[0];
 };
 
-const actionStep = (allSteps, action) => exactlyOne(allSteps.filter((step) => stepValue(step, "uses") === action), action);
-
-const runStep = (allSteps, command) => exactlyOne(allSteps.filter((step) => stepValue(step, "run") === command), command);
-
-const actionInvocations = (source, action) => source.split(/\r?\n/).filter((line) => line.trim() === `uses: ${action}`);
-
-const stepIndex = (allSteps, step) => {
-  const index = allSteps.indexOf(step);
-  assert.notEqual(index, -1, "required workflow step was not found");
-  return index;
+const parseWorkflow = (source) => {
+  const document = parseDocument(source);
+  assert.equal(document.errors.length, 0, document.errors.map((error) => error.message).join("\n"));
+  return record(document.toJS(), "workflow");
 };
 
-const validateWorkflow = (source) => {
-  assert.match(source, /^on:\n  push:\n    branches: \[main\]\n    paths:\n(?:      - .+\n){2,}  workflow_dispatch:/m);
-  assert.match(source, /^      - "site\/\*\*"$/m);
-  assert.match(source, /^      - "\.github\/workflows\/pages\.yml"$/m);
-  assert.doesNotMatch(source, /^\s*pull_request\s*:/m);
+const uses = (step) => typeof step?.uses === "string" ? step.uses.trim() : undefined;
 
-  const deployment = deployJob(source);
-  const allSteps = steps(deployment);
-  const actions = [
-    "actions/checkout@v6",
-    "actions/setup-node@v6",
-    "actions/configure-pages@v5",
-    "actions/upload-pages-artifact@v4",
-    "actions/deploy-pages@v4",
-  ];
-  const actionSteps = new Map(actions.map((action) => [action, actionStep(allSteps, action)]));
+const validateWorkflow = (source) => {
+  const parsed = parseWorkflow(source);
+
+  const triggers = record(parsed.on, "top-level on");
+  assert.deepEqual(Object.keys(triggers).sort(), ["push", "workflow_dispatch"]);
+  const push = record(triggers.push, "push trigger");
+  assert.deepEqual(push.branches, ["main"]);
+  assert.deepEqual(push.paths, ["site/**", ".github/workflows/pages.yml"]);
+
+  assert.deepEqual(parsed.permissions, {
+    contents: "read",
+    pages: "write",
+    "id-token": "write",
+  });
+  assert.deepEqual(parsed.concurrency, { group: "pages", "cancel-in-progress": false });
+
+  const jobs = record(parsed.jobs, "jobs");
+  const deploy = record(jobs.deploy, "jobs.deploy");
+  assert.deepEqual(deploy.environment, {
+    name: "github-pages",
+    url: "${{ steps.deployment.outputs.page_url }}",
+  });
+  assert.ok(Array.isArray(deploy.steps), "jobs.deploy must define steps");
+
+  const allSteps = Object.entries(jobs).flatMap(([jobName, job]) => {
+    const steps = Array.isArray(job?.steps) ? job.steps : [];
+    return steps.map((step, index) => ({ jobName, index, step }));
+  });
+  const deploymentSteps = deploy.steps.map((step, index) => ({ jobName: "deploy", index, step }));
+  const deploymentAction = (action) => exactlyOne(
+    deploymentSteps.filter(({ step }) => uses(step) === action),
+    `${action} step in jobs.deploy`,
+  );
+  const actionInvocations = (action) => allSteps.filter(({ step }) => uses(step) === action);
+
+  const checkout = deploymentAction("actions/checkout@v6");
+  const setupNode = deploymentAction("actions/setup-node@v6");
+  const configure = deploymentAction("actions/configure-pages@v5");
+  const upload = deploymentAction("actions/upload-pages-artifact@v4");
+  const deployPages = deploymentAction("actions/deploy-pages@v4");
+
   for (const action of ["actions/upload-pages-artifact@v4", "actions/deploy-pages@v4"]) {
-    assert.equal(actionInvocations(source, action).length, 1, `expected exactly one ${action} invocation across all jobs`);
+    const invocation = exactlyOne(actionInvocations(action), `${action} invocation across all jobs`);
+    assert.equal(invocation.jobName, "deploy", `${action} must run in jobs.deploy`);
   }
 
-  const nodeConfiguration = block(actionSteps.get("actions/setup-node@v6").join("\n"), 8, "with");
-  assert.equal(scalar(nodeConfiguration, 10, "node-version"), "24");
+  assert.equal(String(record(setupNode.step.with, "setup-node with")["node-version"]), "24");
+  assert.equal(record(upload.step.with, "upload-pages-artifact with").path, "site");
 
-  const uploadConfiguration = block(actionSteps.get("actions/upload-pages-artifact@v4").join("\n"), 8, "with");
-  assert.equal(scalar(uploadConfiguration, 10, "path"), "site");
-
-  const permissionBlock = block(source, 0, "permissions");
-  assert.deepEqual(
-    permissionBlock.slice(1).filter(Boolean).map((line) => {
-      const [permission, value] = line.trim().split(": ");
-      return [permission, value];
-    }).sort(),
-    [["contents", "read"], ["id-token", "write"], ["pages", "write"]],
+  const runStep = (command) => exactlyOne(
+    deploymentSteps.filter(({ step }) => step?.run === command),
+    `${command} step in jobs.deploy`,
   );
-
-  const environment = block(deployment.join("\n"), 4, "environment");
-  assert.equal(scalar(environment, 6, "name"), "github-pages");
-  assert.equal(scalar(environment, 6, "url"), "${{ steps.deployment.outputs.page_url }}");
-
-  const concurrency = block(source, 0, "concurrency");
-  assert.equal(scalar(concurrency, 2, "group"), "pages");
-  assert.equal(scalar(concurrency, 2, "cancel-in-progress"), "false");
-
   const orderedSteps = [
-    runStep(allSteps, "npm ci"),
-    runStep(allSteps, "npx playwright install --with-deps chromium"),
-    runStep(allSteps, "npm test"),
-    actionSteps.get("actions/configure-pages@v5"),
-    actionSteps.get("actions/upload-pages-artifact@v4"),
-    actionSteps.get("actions/deploy-pages@v4"),
-  ].map((step) => stepIndex(allSteps, step));
+    checkout,
+    setupNode,
+    runStep("npm ci"),
+    runStep("npx playwright install --with-deps chromium"),
+    runStep("npm test"),
+    configure,
+    upload,
+    deployPages,
+  ];
   for (let index = 1; index < orderedSteps.length; index += 1) {
-    assert.ok(orderedSteps[index - 1] < orderedSteps[index], "dependency installation, tests, Pages packaging, and deployment must stay ordered");
+    assert.ok(orderedSteps[index - 1].index < orderedSteps[index].index, "checkout, Node, tests, Pages packaging, and deployment must stay ordered");
   }
 };
 
@@ -144,6 +119,8 @@ test("rejects policy-breaking Pages workflow mutations", async () => {
   );
   const secondJobUpload = `${source}\n  audit-upload:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Upload an invalid artifact\n        uses: actions/upload-pages-artifact@v4\n        with:\n          path: .\n`;
   const secondJobDeploy = `${source}\n  audit-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Deploy a second time\n        uses: actions/deploy-pages@v4\n`;
+  const quotedSecondJobUpload = `${source}\n  quoted-audit-upload:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Upload a quoted invalid artifact\n        uses: "actions/upload-pages-artifact@v4" # duplicate\n        with:\n          path: .\n`;
+  const commentedSecondJobDeploy = `${source}\n  commented-audit-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Deploy a commented second time\n        uses: 'actions/deploy-pages@v4' # duplicate\n`;
 
   for (const [name, mutation] of [
     ["a root artifact path", source.replace("path: site", "path: .")],
@@ -153,5 +130,7 @@ test("rejects policy-breaking Pages workflow mutations", async () => {
     ["configuration before tests", configureBeforeTests],
     ["a second job that uploads a root artifact", secondJobUpload],
     ["a second job that deploys Pages", secondJobDeploy],
+    ["a second job that quotes a Pages upload action", quotedSecondJobUpload],
+    ["a second job that comments a Pages deploy action", commentedSecondJobDeploy],
   ]) assert.throws(() => validateWorkflow(mutation), name);
 });
