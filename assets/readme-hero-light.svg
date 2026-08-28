@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="hero-title hero-desc">
+  <title id="hero-title">花卷 AI 实验室</title>
+  <desc id="hero-desc">花卷猫咪实验室标志与从 IDEA、AGENT、TOOLS 到 VISIBLE WORK 的作品路线</desc>
+  <rect width="1200" height="360" rx="28" fill="#F3F0E8"/>
+  <rect x="1" y="1" width="1198" height="358" rx="27" fill="none" stroke="#087C7E" stroke-opacity="0.58" stroke-width="2"/>
+  <g stroke="#526664" stroke-opacity="0.14" stroke-width="1">
+    <line x1="340" y1="28" x2="340" y2="332"/>
+    <line x1="370" y1="205" x2="1140" y2="205"/>
+    <line x1="370" y1="286" x2="1140" y2="286"/>
+    <line x1="520" y1="205" x2="520" y2="306"/>
+    <line x1="730" y1="205" x2="730" y2="306"/>
+    <line x1="920" y1="205" x2="920" y2="306"/>
+  </g>
+  <g transform="translate(30 32) scale(0.84)">
+    <path d="M38 182C66 78 242 54 282 158S212 286 94 250 18 126 38 182Z" fill="none" stroke="#087C7E" stroke-width="2.5" stroke-dasharray="8 12"/>
+    <circle cx="278" cy="159" r="7" fill="#FF5D8F"/>
+    <circle cx="54" cy="236" r="4" fill="#24D8D2"/>
+    <g fill="none" stroke="#071011" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+      <path d="M96 116 80 64l58 34"/>
+      <path d="m224 116 16-52-58 34"/>
+      <path d="M92 142c4-54 132-54 136 0v44c0 60-132 60-136 0Z"/>
+      <path d="M124 160h1m70 0h1M146 190c9 8 19 8 28 0"/>
+    </g>
+  </g>
+  <text x="370" y="88" fill="#071011" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="50" font-weight="700" letter-spacing="3">HUAJUAN AI LAB</text>
+  <text x="372" y="132" fill="#076D6F" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="700" letter-spacing="2">花卷 AI 实验室</text>
+  <text x="372" y="170" fill="#3C5452" font-family="system-ui, -apple-system, sans-serif" font-size="20">把 AI 想法做成看得见、能运行的作品</text>
+  <g transform="translate(958 38)">
+    <rect width="194" height="34" rx="17" fill="#FF5D8F" fill-opacity="0.1" stroke="#B02B58" stroke-width="1.5"/>
+    <circle cx="18" cy="17" r="4" fill="#FF5D8F"/>
+    <text x="32" y="22" fill="#8F214B" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700" letter-spacing="0.8">LAB STATUS · BUILDING</text>
+  </g>
+  <g>
+    <polyline points="394,252 552,252 650,228 764,252 944,252 1088,252" fill="none" stroke="#087C7E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="1088,252 1074,244 1074,260" fill="#087C7E"/>
+    <circle cx="394" cy="252" r="9" fill="#F3F0E8" stroke="#087C7E" stroke-width="4"/>
+    <circle cx="650" cy="228" r="9" fill="#F3F0E8" stroke="#087C7E" stroke-width="4"/>
+    <circle cx="764" cy="252" r="9" fill="#F3F0E8" stroke="#087C7E" stroke-width="4"/>
+    <circle cx="944" cy="252" r="11" fill="#FF5D8F" stroke="#F3F0E8" stroke-width="4"/>
+    <text x="374" y="294" fill="#071011" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="700" letter-spacing="1.4">IDEA</text>
+    <text x="618" y="206" fill="#071011" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="700" letter-spacing="1.4">AGENT</text>
+    <text x="738" y="294" fill="#071011" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="700" letter-spacing="1.4">TOOLS</text>
+    <text x="886" y="294" fill="#8F214B" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="700" letter-spacing="1.2">VISIBLE WORK</text>
+  </g>
+  <text x="372" y="330" fill="#526664" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" letter-spacing="1">JAVA BACKEND · AI AGENT · CREATIVE TECHNOLOGY</text>
+</svg>

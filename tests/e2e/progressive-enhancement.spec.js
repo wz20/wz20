@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+const orderedProjects = [
+  { id: "oauth2", title: "OAuth2 SSO Demo", repo: "https://github.com/wz20/OAuth2-sso-demo" },
+  { id: "vox", title: "VOX Paper Collage Video", repo: "https://github.com/wz20/create-vox-paper-collage-video" },
+  { id: "illustrations", title: "Huajuan Illustrations", repo: "https://github.com/wz20/ian-huajuan-illustrations" },
+  { id: "jinjing", title: "Jinjing Skill", repo: "https://github.com/wz20/jinjing-skill" },
+];
+
 test("keeps static projects and contact links when the core app fails to load", async ({ page }) => {
   await page.route("**/app.js", (route) => route.abort("failed"));
   await page.goto("/");
@@ -7,9 +14,9 @@ test("keeps static projects and contact links when the core app fails to load", 
   const staticProjects = page.locator("[data-static-fallback] [data-static-project]");
   await expect(staticProjects).toHaveCount(4);
   await expect(staticProjects.first()).toBeVisible();
-  await expect(staticProjects.first().getByRole("link", { name: /查看项目/ })).toHaveAttribute(
-    "href",
-    "https://github.com/wz20/create-vox-paper-collage-video",
+  await expect(staticProjects.locator("h3")).toHaveText(orderedProjects.map(({ title }) => title));
+  expect(await staticProjects.locator("a").evaluateAll((links) => links.map(({ href }) => href))).toEqual(
+    orderedProjects.map(({ repo }) => repo),
   );
 
   const staticContact = page.locator("[data-static-contact-fallback]");
@@ -29,6 +36,9 @@ test("keeps enhanced content and immediate interactions when motion fails", asyn
   await expect(page.locator("html")).toHaveAttribute("data-enhanced", "true");
   await expect(page.locator("html")).toHaveAttribute("data-motion", "unavailable");
   await expect(page.locator("[data-project-card]")).toHaveCount(4);
+  expect(await page.locator("[data-project-card]").evaluateAll((cards) => cards.map(({ dataset }) => dataset.projectCard))).toEqual(
+    orderedProjects.map(({ id }) => id),
+  );
   await expect(page.locator("[data-static-fallback]")).toBeHidden();
 
   await page.locator("[data-open-project]").first().click();

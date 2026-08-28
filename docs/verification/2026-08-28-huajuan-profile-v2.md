@@ -1,4 +1,4 @@
-# Huajuan GitHub Profile V2 — local verification
+# Huajuan GitHub Profile V2 — verification record
 
 Date: 2026-08-28 (Asia/Shanghai)
 
@@ -9,6 +9,8 @@ Date: 2026-08-28 (Asia/Shanghai)
 - That tree contains `scripts/serve.mjs`, `site/`, and `tests/`; this verification document was intentionally written only after the checks. The documentation commit containing this record therefore did not exist when the checks ran and is not presented as the tested commit.
 - Review follow-up tested parent: `e68a5be4aeced08c58edd4ba189a743a4b19c7f4`; exact staged source/test tree after all four review repairs and before this document update: `3f06ded809974b1448b8d2e66ac5a8bac68376dd`. The later follow-up documentation commit likewise did not exist during those checks.
 - Server-test correctness follow-up tested parent: `706be601bf058e7a99d366d40bea7ccfc5ca3c4d`; exact staged source/test tree after the two P3 repairs and before this document update: `6266f922b1873cad3991612ef5b2875530377209`. The documentation commit created afterward is not represented as the tested source tree.
+- The current README release branch `codex/huajuan-profile-readme-v2` starts from merged production `main` commit `2e61c1f654ffe114451f2566a03447c7b980d2b8`.
+- Task 9 implementation and test-hardening commits are `1540b6e5abcc565b71675fb1c1e7102cac38f0d0`, `ae6ec99b14f527f8e3a310a5aef68fec624644a4`, and `2c9e1479f2779f321abe990678999f483f10bf04`. The Task 10 pre-remote full suite described below ran with `2c9e1479f2779f321abe990678999f483f10bf04` checked out, before this verification-record update existed.
 
 ## Test-first evidence and root-cause repairs
 
@@ -102,13 +104,49 @@ Whole-branch review found that the normal-motion cat orbit used an infinite GSAP
 - Fresh full regression: `npm test` — 17 unit tests passed; 82 Playwright tests passed and the same 4 desktop-only mobile cases skipped.
 - Syntax and patch hygiene: `node --check site/motion.js`, `node --check tests/e2e/motion.spec.js`, and `git diff --check` all passed with no output.
 
-## Production-only remaining checks
+## Task 8 production release evidence
 
-- Run the GitHub Actions test/deploy workflow and verify the live GitHub Pages URL after the authorized release steps.
-- Repeat Lighthouse against the deployed URL, including production CDN/cache/compression behavior; the local score is not a production measurement.
-- Recheck external GitHub/Douyin destinations and the public profile link from the deployed origin.
-- Perform the planned production browser/device review after Pages publication. No production URL, workflow run, merge, or deployment was executed as part of this local Task 8 record.
-- For Task 8, remote push/PR creation, GitHub Pages enablement, production deployment, live URL validation, production browser review, and production Lighthouse remain pending the controller's release gate.
+- Site PR [#1](https://github.com/wz20/wz20/pull/1) merged as `031a84258fc58a57f74ef81f885a212056b3d762`.
+- Initial Pages run `33171114130` passed all 23 unit tests and 89 of 90 browser tests. Its only failure was a CI readiness race in the pointer assertion; the production runtime was unchanged.
+- Hotfix PR [#3](https://github.com/wz20/wz20/pull/3), commit `f55d3f9b3dff1913798f3db72a927a5ef6dfbfd0`, waited for the durable motion-ready state and merged to `main` as `2e61c1f654ffe114451f2566a03447c7b980d2b8`.
+- Workflow run `33171657644` completed successfully.
+- The live site `https://wz20.github.io/wz20/` returned HTTP 200 with the exact title `花卷 AI 实验室 · Huajuan AI Lab`.
+- Production Lighthouse measured Performance `0.98`, Accessibility `1.00`, FCP `820 ms`, LCP `820 ms`, TBT `0 ms`, and CLS `0.0009176536041691`.
+- Production browser-harness review at 390 px and 1440 px observed no console errors, failed resources, or horizontal overflow. Project dialog, ActionSheet, Toast, copy feedback, and focus restoration passed at the exercised widths.
+- At 390 px, reduced motion remained static with no pin or orbit. At 1440 px, the flow pin, stage, progress, and navigation stayed synchronized; the desktop project dialog also passed.
+
+## Task 9 README local verification
+
+- Task 9 shipped in `1540b6e5abcc565b71675fb1c1e7102cac38f0d0`; independent-review hardening commits `ae6ec99b14f527f8e3a310a5aef68fec624644a4` and `2c9e1479f2779f321abe990678999f483f10bf04` removed coordinate-bound assertions and scoped the cat-mark contract to its rounded-stroke group while accepting equivalent path serialization.
+- Focused README tests passed 7/7; the then-current full unit suite passed 30/30.
+- Both 1200 × 360 repository-owned SVG heroes passed `xmllint`. Dark and light variants were rendered and visually reviewed at 1200 × 360 and through a 600 × 180 `width: 100%` wrapper with no observed clipping.
+- The final independent Task 9 review reported no findings and the branch was clean to advance.
+
+## Task 10 remote pre-merge verification and explicit README merge gate
+
+- Current branch base: merged production `main` at `2e61c1f654ffe114451f2566a03447c7b980d2b8`.
+- Current full `npm test`: 31 unit tests passed; Playwright passed 90 and skipped the 4 mobile executions of desktop-only motion cases out of 94, with 0 failures. One earlier full run had a single desktop project-dialog focus failure after 89 browser passes and the same 4 expected skips; that exact case then passed 1/1 in isolation, and the complete fresh rerun produced the recorded green result without changing dialog code or tests.
+- Pre-remote checks: `node --check tests/unit/readme.test.mjs` passed; `xmllint --noout` passed for both README heroes and both site SVGs; `git diff --check` passed with no output.
+- GitHub GraphQL snapshot observed on 2026-08-28: `wz20/OAuth2-sso-demo` 7 stars, `wz20/create-vox-paper-collage-video` 2, `wz20/ian-huajuan-illustrations` 1, and `wz20/jinjing-skill` 1.
+- The deterministic featured-project order is therefore OAuth2 SSO Demo (7) → VOX Paper Collage Video (2) → Huajuan Illustrations (1) → Jinjing Skill (1). Equal-star entries retain their prior relative order, so Huajuan Illustrations remains before Jinjing Skill. The recorded numeric snapshot is internal project data and is not rendered as a visibly stale count.
+- Test-first order coverage was captured across all three surfaces. Focused unit RED was 6 passed and 3 failed; focused progressive-enhancement RED was 2 passed and 4 failed. After reordering the README cards, `site/data.js`, and the complete static fallback, focused unit GREEN passed 9/9 and focused progressive-enhancement GREEN passed 6/6. The tests verify descending snapshot order, the stable one-star tie, unique approved destinations, and matching JavaScript-enhanced and no-JavaScript fallback order without full-markup assertions.
+- README PR [#4](https://github.com/wz20/wz20/pull/4) is OPEN, non-draft, with `mergeStateStatus=CLEAN`. At the time of the remote render review, its base OID was `2e61c1f654ffe114451f2566a03447c7b980d2b8` and head OID was `bda9520e4f5e1e9294d1c33ed8db1414985b3d17`; the verification-document commit that records these facts advances the branch head afterward.
+- The observed `statusCheckRollup` was empty. No PR checks were reported because the Pages workflow triggers only on relevant `main` pushes and manual dispatch, not pull requests; this is an observed limitation, not a passing check.
+- GitHub's sanitized branch render at `https://github.com/wz20/wz20/tree/codex/huajuan-profile-readme-v2` was reviewed through the same browser-harness connection to local Chrome. No cloud browser or second automation system was used.
+- Dark review: GitHub reported `data-color-mode="dark"`; the dark hero was selected at natural size 1200 × 360. At desktop 1728 × 940, the article and project table were 838 px wide. At mobile 390 × 844, the article and table were 324 px wide. Neither the article nor body overflowed.
+- Light review: GitHub reported `data-color-mode="light"` with `prefers-color-scheme: light` emulation; the light hero was selected at natural size 1200 × 360. The desktop image and table were 838 px wide, while the 390 × 844 mobile image and table were 324 px wide. Neither the article nor body overflowed.
+- Both themes were visually inspected. The hero, project table, section hierarchy, and reading order remained intact; images loaded. The rendered page contained exactly one Douyin destination and two links to the live lab: the hero CTA and closing CTA.
+- The account appearance setting was temporarily switched light → dark for review and restored to its original light state afterward. Five review tabs were closed.
+- Screenshot evidence was temporary local QA only: `/private/tmp/huajuan-readme-pr-dark-desktop.png`, `/private/tmp/huajuan-readme-pr-dark-mobile-readme.png`, `/private/tmp/huajuan-readme-pr-light-desktop.png`, and `/private/tmp/huajuan-readme-pr-light-mobile-readme.png`. These files were not added to the repository.
+- **SUPERSEDED FOR MERGE DECISION:** the remote render observations above remain factual for head `bda9520e4f5e1e9294d1c33ed8db1414985b3d17`, but the featured-project ordering has changed afterward. They are not treated as verification of the new PR head.
+- The completed Star-order re-verification rendered PR #4 remote head `2aa1f07e9a02d8464ecc7c1246041f937a132a1c` on GitHub's branch page; GitHub's latest-commit marker showed `2aa1f07`.
+- At desktop 1728 × 940, the rendered project order was exactly OAuth2 SSO Demo → VOX Paper Collage Video → Huajuan Illustrations → Jinjing Skill. The four repository destinations followed the same order and were unique. The project table width/scrollWidth was 838/838 px, and neither the article nor body had horizontal overflow.
+- With light preference emulation, the repository-owned light hero was selected at natural size 1200 × 360. At mobile 390 × 844, the image was 324 px wide and the project table width/scrollWidth was 324/324 px; the exact project order was preserved and neither the article nor body overflowed.
+- With dark preference emulation at 390 × 844, the repository-owned dark hero was selected at natural size 1200 × 360. The same exact project order was preserved and no horizontal overflow was observed.
+- The re-verification reused the existing browser-harness connection to local Chrome, used one review tab, and closed that tab afterward. No cloud browser or second automation system was used.
+- **PENDING — explicit merge gate:** PR #4 has not been merged, and no merge has been requested or performed in this verification-record follow-up.
+- **PENDING — public profile:** the merged raw README, merged README blob SHA, repository-owned hero paths on `main`, and `https://github.com/wz20` public-profile rendering have not been verified.
+- These remaining README checks require explicit merge approval and the post-merge Task 10 release step. No result is estimated or inferred from the pre-merge evidence.
 
 ## Whole-branch progressive-enhancement hardening
 
