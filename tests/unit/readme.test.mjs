@@ -96,10 +96,14 @@ test("ships XML-safe static dark and light SVG heroes", async () => {
     assert.match(svg, /<text\b[^>]*>把 AI 想法做成看得见、能运行的作品<\/text>/);
     assert.match(svg, /<text\b[^>]*>IDEA<\/text>[\s\S]*<text\b[^>]*>AGENT<\/text>[\s\S]*<text\b[^>]*>TOOLS<\/text>[\s\S]*<text\b[^>]*>VISIBLE WORK<\/text>/);
     assert.match(svg, /<text\b[^>]*>LAB STATUS · BUILDING<\/text>/);
-    const pathElements = [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*\/>/g)];
-    assert.ok(pathElements.length >= 5, `${theme} hero must retain a multi-path Huajuan cat/lab mark`);
-    assert.ok(pathElements.every(([, pathData]) => pathData.trim().length >= 10), `${theme} hero paths must contain meaningful geometry`);
-    assert.match(svg, /<g\b(?=[^>]*\bstroke-linecap="round")(?=[^>]*\bstroke-linejoin="round")[^>]*>/);
+    const catGroupStart = svg.match(/<g\b(?=[^>]*\bstroke-linecap="round")(?=[^>]*\bstroke-linejoin="round")[^>]*>/);
+    assert.ok(catGroupStart, `${theme} hero must contain the rounded-stroke Huajuan cat group`);
+    const catGroupEnd = svg.indexOf("</g>", catGroupStart.index + catGroupStart[0].length);
+    assert.notEqual(catGroupEnd, -1, `${theme} hero cat group must close`);
+    const catGroup = svg.slice(catGroupStart.index, catGroupEnd + 4);
+    const catPathData = [...catGroup.matchAll(/<path\b[^>]*>/g)].map(([path]) => path.match(/\bd\s*=\s*(["'])(.*?)\1/)?.[2] ?? "");
+    assert.ok(catPathData.length >= 4, `${theme} hero must retain a multi-path Huajuan cat mark`);
+    assert.ok(catPathData.every((pathData) => pathData.trim().length >= 10), `${theme} hero cat paths must contain meaningful geometry`);
     assert.match(svg, /#24D8D2/i);
     assert.match(svg, /#FF5D8F/i);
     assert.match(svg, theme === "dark" ? /fill="#071011"/i : /fill="#F3F0E8"/i);
