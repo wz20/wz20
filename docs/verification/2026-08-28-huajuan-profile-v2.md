@@ -122,15 +122,22 @@ Whole-branch review found that the normal-motion cat orbit used an infinite GSAP
 - Both 1200 × 360 repository-owned SVG heroes passed `xmllint`. Dark and light variants were rendered and visually reviewed at 1200 × 360 and through a 600 × 180 `width: 100%` wrapper with no observed clipping.
 - The final independent Task 9 review reported no findings and the branch was clean to advance.
 
-## Task 10 pre-remote verification and explicit README merge gate
+## Task 10 remote pre-merge verification and explicit README merge gate
 
 - Current branch base: merged production `main` at `2e61c1f654ffe114451f2566a03447c7b980d2b8`.
 - Current full `npm test`: 30 unit tests passed; Playwright passed 90 and skipped the 4 mobile executions of desktop-only motion cases out of 94, with 0 failures. The first restricted-sandbox attempt passed the 30 unit tests but macOS denied Chromium Mach-port registration before browser assertions, so all 94 browser cases reported launcher failures; the permitted local rerun above is the product result.
 - Pre-remote checks: `node --check tests/unit/readme.test.mjs` passed; `xmllint --noout` passed for both README heroes and both site SVGs; `git diff --check` passed with no output.
-- **PENDING — explicit merge gate:** the README branch has not been pushed, no README PR URL exists, no PR checks have run, and no merge has been requested or performed.
-- **PENDING — branch rendering:** GitHub branch rendering in dark/light appearance, project-table alignment, external links, image loading, and narrow-screen behavior have not been remotely observed.
+- README PR [#4](https://github.com/wz20/wz20/pull/4) is OPEN, non-draft, with `mergeStateStatus=CLEAN`. At the time of the remote render review, its base OID was `2e61c1f654ffe114451f2566a03447c7b980d2b8` and head OID was `bda9520e4f5e1e9294d1c33ed8db1414985b3d17`; the verification-document commit that records these facts advances the branch head afterward.
+- The observed `statusCheckRollup` was empty. No PR checks were reported because the Pages workflow triggers only on relevant `main` pushes and manual dispatch, not pull requests; this is an observed limitation, not a passing check.
+- GitHub's sanitized branch render at `https://github.com/wz20/wz20/tree/codex/huajuan-profile-readme-v2` was reviewed through the same browser-harness connection to local Chrome. No cloud browser or second automation system was used.
+- Dark review: GitHub reported `data-color-mode="dark"`; the dark hero was selected at natural size 1200 × 360. At desktop 1728 × 940, the article and project table were 838 px wide. At mobile 390 × 844, the article and table were 324 px wide. Neither the article nor body overflowed.
+- Light review: GitHub reported `data-color-mode="light"` with `prefers-color-scheme: light` emulation; the light hero was selected at natural size 1200 × 360. The desktop image and table were 838 px wide, while the 390 × 844 mobile image and table were 324 px wide. Neither the article nor body overflowed.
+- Both themes were visually inspected. The hero, project table, section hierarchy, and reading order remained intact; images loaded. The rendered page contained exactly one Douyin destination and two links to the live lab: the hero CTA and closing CTA.
+- The account appearance setting was temporarily switched light → dark for review and restored to its original light state afterward. Five review tabs were closed.
+- Screenshot evidence was temporary local QA only: `/private/tmp/huajuan-readme-pr-dark-desktop.png`, `/private/tmp/huajuan-readme-pr-dark-mobile-readme.png`, `/private/tmp/huajuan-readme-pr-light-desktop.png`, and `/private/tmp/huajuan-readme-pr-light-mobile-readme.png`. These files were not added to the repository.
+- **PENDING — explicit merge gate:** PR #4 has not been merged, and no merge has been requested or performed in this verification-record follow-up.
 - **PENDING — public profile:** the merged raw README, merged README blob SHA, repository-owned hero paths on `main`, and `https://github.com/wz20` public-profile rendering have not been verified.
-- These README remote checks require the separate Task 10 release step and explicit merge approval. No result is estimated or inferred from the local evidence.
+- These remaining README checks require explicit merge approval and the post-merge Task 10 release step. No result is estimated or inferred from the pre-merge evidence.
 
 ## Whole-branch progressive-enhancement hardening
 
