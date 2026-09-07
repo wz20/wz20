@@ -1,0 +1,36 @@
+name: Refresh GitHub profile
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: profile-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Generate leaderboard and contribution image
+        run: node scripts/refresh-profile.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Verify generated profile
+        run: node --test tests/unit/profile-refresh.test.mjs tests/unit/readme.test.mjs
+      - name: Commit changed data
+        run: |
+          git add README.md assets/profile-snapshot.json assets/profile-activity-dark.svg assets/profile-activity-light.svg
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: refresh GitHub profile data'
+          git push origin HEAD:main
