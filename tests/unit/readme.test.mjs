@@ -35,22 +35,22 @@ test("keeps the exact identity-first section order and primary copy", async () =
   const readme = await readFile(readmeUrl, "utf8");
   const sections = [...readme.matchAll(/^## (.+)$/gm)].map(([, heading]) => heading);
 
-  assert.deepEqual(sections, ["你好，我是花卷", "精选实验", "当前研究", "代码活动", "找到花卷"]);
+  assert.deepEqual(sections, ["你好，我是花卷", "最新项目", "当前研究", "代码活动", "找到花卷"]);
   assert.match(readme, /\*\*Java 后端 · AI Agent · Creative Technology\*\*/);
   assert.match(readme, /把抽象的 AI 概念，做成看得见、能运行、可以继续迭代的产品、工具与视觉作品。/);
   assert.ok(readme.indexOf("## 你好，我是花卷") < readme.indexOf("profile-activity-dark.svg"));
 });
 
-test("orders approved projects by the star snapshot without duplicating destinations", async () => {
+test("orders latest projects by creation date without duplicating destinations", async () => {
   const snapshot = JSON.parse(await readFile(new URL('../../assets/profile-snapshot.json', import.meta.url), 'utf8'));
   const approvedRepos = snapshot.data.repos.slice(0,4).map(r=>r.name);
   const readme = await readFile(readmeUrl, "utf8");
-  const selectedWork = readme.slice(readme.indexOf("## 精选实验"), readme.indexOf("## 当前研究"));
+  const selectedWork = readme.slice(readme.indexOf("## 最新项目"), readme.indexOf("## 当前研究"));
   const destinations = [...selectedWork.matchAll(/href="(https:\/\/github\.com\/wz20\/[^\"]+)"/g)].map(([, href]) => href);
 
   assert.deepEqual(destinations, approvedRepos.map((repo) => `https://github.com/wz20/${repo}`));
-  const actualStars = snapshot.data.repos.slice(0,4).map(r=>r.stargazers_count);
-  assert.ok(actualStars.every((stars, index) => index === 0 || actualStars[index - 1] >= stars));
+  const dates = snapshot.data.repos.slice(0,4).map(r=>r.created_at);
+  assert.ok(dates.every((date, index) => date && (index === 0 || dates[index - 1] >= date)));
   for (const repo of approvedRepos) assert.equal(occurrences(readme, `https://github.com/wz20/${repo}`), 1);
 });
 
