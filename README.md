@@ -21,7 +21,7 @@
 ## 精选实验
 
 <!-- PROFILE:START -->
-<p>公开原创项目 · 按 Star 降序，同星按最近更新排序 · 每小时检查更新<br>数据更新时间：2026-09-07 14:25 UTC</p>
+<p>公开原创项目 · 按 Star 降序，同星按最近更新排序 · 每小时检查更新<br>数据更新时间：2026-09-07 14:28 UTC</p>
 <table>
 <tr><td width="50%" valign="top"><h3>huajuan-harness-cli</h3><p>★ 7 · JavaScript</p><p>即放即用的 Agent Harness：把本地目录变成可自动进化、审阅与淘汰的知识工作区</p><a href="https://github.com/wz20/huajuan-harness-cli">查看项目 →</a></td>
 <td width="50%" valign="top"><h3>OAuth2-sso-demo</h3><p>★ 7 · Java</p><p>OAuth2.0+SpringSecurity的几个例子，包括github登录、sso单点登录</p><a href="https://github.com/wz20/OAuth2-sso-demo">查看项目 →</a></td></tr>
