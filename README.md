@@ -20,32 +20,15 @@
 
 ## 精选实验
 
+<!-- PROFILE:START -->
+<p>公开原创项目 · 按 Star 降序，同星按最近更新排序 · 每小时检查更新<br>数据更新时间：2026-09-07 14:25 UTC</p>
 <table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🔐 OAuth2 SSO Demo</h3>
-      <p>用可运行示例拆解 GitHub 登录、OAuth2 授权与单点登录流程。</p>
-      <a href="https://github.com/wz20/OAuth2-sso-demo">查看项目 →</a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🎬 VOX Paper Collage Video</h3>
-      <p>自动生成 VOX 风格纸张拼贴视频，把素材、镜头与生产流程串成可复用管线。</p>
-      <a href="https://github.com/wz20/create-vox-paper-collage-video">查看项目 →</a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🐱 Huajuan Illustrations</h3>
-      <p>花卷猫咪极简插画素材库，用统一角色资产解释抽象技术概念。</p>
-      <a href="https://github.com/wz20/ian-huajuan-illustrations">查看项目 →</a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🧭 Jinjing Skill</h3>
-      <p>基于 Python 的路线规划 Skill，把自然语言意图转成可检查的工具执行结果。</p>
-      <a href="https://github.com/wz20/jinjing-skill">查看项目 →</a>
-    </td>
-  </tr>
+<tr><td width="50%" valign="top"><h3>huajuan-harness-cli</h3><p>★ 7 · JavaScript</p><p>即放即用的 Agent Harness：把本地目录变成可自动进化、审阅与淘汰的知识工作区</p><a href="https://github.com/wz20/huajuan-harness-cli">查看项目 →</a></td>
+<td width="50%" valign="top"><h3>OAuth2-sso-demo</h3><p>★ 7 · Java</p><p>OAuth2.0+SpringSecurity的几个例子，包括github登录、sso单点登录</p><a href="https://github.com/wz20/OAuth2-sso-demo">查看项目 →</a></td></tr>
+<tr><td width="50%" valign="top"><h3>create-vox-paper-collage-video</h3><p>★ 2 · Shell</p><p>Generic Codex skill for generating VOX-style paper-collage videos from confirmed production inputs.</p><a href="https://github.com/wz20/create-vox-paper-collage-video">查看项目 →</a></td>
+<td width="50%" valign="top"><h3>spring-notes</h3><p>★ 2 · 多语言</p><p>spring注解开发最全最系统最容易理解的笔记</p><a href="https://github.com/wz20/spring-notes">查看项目 →</a></td></tr>
 </table>
+<!-- PROFILE:END -->
 
 ## 当前研究
 
@@ -54,9 +37,11 @@
 ## 代码活动
 
 <div align="center">
-  <img height="168" src="https://github-readme-stats.vercel.app/api?username=wz20&show_icons=true&hide_border=true&bg_color=071011&title_color=24d8d2&icon_color=ff5d8f&text_color=f3f0e8" alt="wz20 GitHub 数据">
-  <br>
-  <img width="96%" src="https://github-readme-activity-graph.vercel.app/graph?username=wz20&bg_color=071011&color=f3f0e8&line=24d8d2&point=ff5d8f&area=true&hide_border=true" alt="wz20 GitHub 贡献活动图">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/profile-activity-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="./assets/profile-activity-light.svg">
+    <img width="100%" src="./assets/profile-activity-light.svg" alt="wz20 GitHub 项目统计与近一年贡献日历">
+  </picture>
 </div>
 
 ## 找到花卷

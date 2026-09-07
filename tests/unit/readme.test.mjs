@@ -8,13 +8,6 @@ const heroUrls = [
   new URL("../../assets/readme-hero-light.svg", import.meta.url),
 ];
 const liveLabUrl = "https://wz20.github.io/wz20/";
-const projectSnapshot = [
-  { repo: "OAuth2-sso-demo", stars: 7 },
-  { repo: "create-vox-paper-collage-video", stars: 2 },
-  { repo: "ian-huajuan-illustrations", stars: 1 },
-  { repo: "jinjing-skill", stars: 1 },
-];
-const approvedRepos = projectSnapshot.map(({ repo }) => repo);
 
 const occurrences = (source, literal) => source.split(literal).length - 1;
 
@@ -22,7 +15,7 @@ test("uses one theme-aware repository-owned hero with a dark fallback", async ()
   const readme = await readFile(readmeUrl, "utf8");
   const pictures = [...readme.matchAll(/<picture>([\s\S]*?)<\/picture>/g)];
 
-  assert.equal(pictures.length, 1);
+  assert.equal(pictures.length, 2);
   assert.match(
     pictures[0][1],
     /^\s*<source media="\(prefers-color-scheme: dark\)" srcset="\.\/assets\/readme-hero-dark\.svg">\s*<source media="\(prefers-color-scheme: light\)" srcset="\.\/assets\/readme-hero-light\.svg">\s*<img src="\.\/assets\/readme-hero-dark\.svg" width="100%" alt="花卷 AI 实验室：把 AI 想法做成看得见、能运行的作品">\s*$/,
@@ -45,22 +38,19 @@ test("keeps the exact identity-first section order and primary copy", async () =
   assert.deepEqual(sections, ["你好，我是花卷", "精选实验", "当前研究", "代码活动", "找到花卷"]);
   assert.match(readme, /\*\*Java 后端 · AI Agent · Creative Technology\*\*/);
   assert.match(readme, /把抽象的 AI 概念，做成看得见、能运行、可以继续迭代的产品、工具与视觉作品。/);
-  assert.ok(readme.indexOf("## 你好，我是花卷") < readme.indexOf("github-readme-stats.vercel.app"));
+  assert.ok(readme.indexOf("## 你好，我是花卷") < readme.indexOf("profile-activity-dark.svg"));
 });
 
 test("orders approved projects by the star snapshot without duplicating destinations", async () => {
+  const snapshot = JSON.parse(await readFile(new URL('../../assets/profile-snapshot.json', import.meta.url), 'utf8'));
+  const approvedRepos = snapshot.data.repos.slice(0,4).map(r=>r.name);
   const readme = await readFile(readmeUrl, "utf8");
   const selectedWork = readme.slice(readme.indexOf("## 精选实验"), readme.indexOf("## 当前研究"));
   const destinations = [...selectedWork.matchAll(/href="(https:\/\/github\.com\/wz20\/[^\"]+)"/g)].map(([, href]) => href);
 
   assert.deepEqual(destinations, approvedRepos.map((repo) => `https://github.com/wz20/${repo}`));
-  const actualStars = destinations.map((href) => projectSnapshot.find(({ repo }) => href.endsWith(`/${repo}`))?.stars);
-  assert.deepEqual(actualStars, [7, 2, 1, 1]);
+  const actualStars = snapshot.data.repos.slice(0,4).map(r=>r.stargazers_count);
   assert.ok(actualStars.every((stars, index) => index === 0 || actualStars[index - 1] >= stars));
-  assert.deepEqual(destinations.slice(-2), [
-    "https://github.com/wz20/ian-huajuan-illustrations",
-    "https://github.com/wz20/jinjing-skill",
-  ]);
   for (const repo of approvedRepos) assert.equal(occurrences(readme, `https://github.com/wz20/${repo}`), 1);
 });
 
@@ -68,8 +58,12 @@ test("keeps one Douyin destination and the approved activity images", async () =
   const readme = await readFile(readmeUrl, "utf8");
 
   assert.equal(occurrences(readme, "https://www.douyin.com/search/"), 1);
-  assert.equal(occurrences(readme, "github-readme-stats.vercel.app/api?username=wz20"), 1);
-  assert.equal(occurrences(readme, "github-readme-activity-graph.vercel.app/graph?username=wz20"), 1);
+  assert.doesNotMatch(readme, /github-readme-stats|github-readme-activity-graph/);
+  for (const theme of ['dark','light']) {
+    const svg = await readFile(new URL(`../../assets/profile-activity-${theme}.svg`, import.meta.url), 'utf8');
+    assert.match(svg, /<svg/);
+    assert.doesNotMatch(svg, /<script|<foreignObject|href=|onload=/i);
+  }
 });
 
 test("removes the old external template and duplicated profile clutter", async () => {
