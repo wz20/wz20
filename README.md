@@ -18,15 +18,15 @@
 
 我喜欢把抽象的 AI 概念，做成看得见、能运行、可以继续迭代的产品、工具与视觉作品。
 
-## 精选实验
+## 最新项目
 
 <!-- PROFILE:START -->
-<p>公开原创项目 · 按 Star 降序，同星按最近更新排序 · 每小时检查更新<br>数据更新时间：2026-09-07 14:28 UTC</p>
+<p>最新公开项目 · 按创建时间从新到旧 · 每小时检查更新<br>数据更新时间：2026-09-07 14:34 UTC</p>
 <table>
-<tr><td width="50%" valign="top"><h3>huajuan-harness-cli</h3><p>★ 7 · JavaScript</p><p>即放即用的 Agent Harness：把本地目录变成可自动进化、审阅与淘汰的知识工作区</p><a href="https://github.com/wz20/huajuan-harness-cli">查看项目 →</a></td>
-<td width="50%" valign="top"><h3>OAuth2-sso-demo</h3><p>★ 7 · Java</p><p>OAuth2.0+SpringSecurity的几个例子，包括github登录、sso单点登录</p><a href="https://github.com/wz20/OAuth2-sso-demo">查看项目 →</a></td></tr>
-<tr><td width="50%" valign="top"><h3>create-vox-paper-collage-video</h3><p>★ 2 · Shell</p><p>Generic Codex skill for generating VOX-style paper-collage videos from confirmed production inputs.</p><a href="https://github.com/wz20/create-vox-paper-collage-video">查看项目 →</a></td>
-<td width="50%" valign="top"><h3>spring-notes</h3><p>★ 2 · 多语言</p><p>spring注解开发最全最系统最容易理解的笔记</p><a href="https://github.com/wz20/spring-notes">查看项目 →</a></td></tr>
+<tr><td width="50%" valign="top"><h3>desktop-pet-delivery</h3><p>★ 1 · JavaScript</p><p>将角色素材制作成独立 Windows / macOS 桌宠的 Codex Skill，附 Electron 模板、素材导入、安装包构建与清理流程。MIT 开源。</p><a href="https://github.com/wz20/desktop-pet-delivery">查看项目 →</a></td>
+<td width="50%" valign="top"><h3>huajuan-harness-cli</h3><p>★ 7 · JavaScript</p><p>即放即用的 Agent Harness：把本地目录变成可自动进化、审阅与淘汰的知识工作区</p><a href="https://github.com/wz20/huajuan-harness-cli">查看项目 →</a></td></tr>
+<tr><td width="50%" valign="top"><h3>ian-huajuan-illustrations</h3><p>★ 1 · 多语言</p><p>Ian-style minimalist Huajuan cat illustrations for articles, visual metaphors, storyboards, and animation-ready assets.</p><a href="https://github.com/wz20/ian-huajuan-illustrations">查看项目 →</a></td>
+<td width="50%" valign="top"><h3>create-vox-paper-collage-video</h3><p>★ 2 · Shell</p><p>Generic Codex skill for generating VOX-style paper-collage videos from confirmed production inputs.</p><a href="https://github.com/wz20/create-vox-paper-collage-video">查看项目 →</a></td></tr>
 </table>
 <!-- PROFILE:END -->
 

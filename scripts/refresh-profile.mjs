@@ -5,11 +5,11 @@ import { pathToFileURL } from 'node:url';
 export const escape = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function rank(repos) {
   return repos.filter(r => !r.private && !r.fork && !r.archived && r.name !== 'wz20' && r.owner?.login === 'wz20')
-    .sort((a,b) => b.stargazers_count-a.stargazers_count || b.updated_at.localeCompare(a.updated_at) || a.name.localeCompare(b.name, 'en'));
+    .sort((a,b) => b.created_at.localeCompare(a.created_at) || a.name.localeCompare(b.name, 'en'));
 }
 export function projectTable(repos, updated) {
   const cards = repos.slice(0,4).map(r => `<td width="50%" valign="top"><h3>${escape(r.name)}</h3><p>★ ${r.stargazers_count} · ${escape(r.language || '多语言')}</p><p>${escape(r.description || '查看仓库了解项目代码与文档。')}</p><a href="https://github.com/wz20/${encodeURIComponent(r.name)}">查看项目 →</a></td>`);
-  return `<!-- PROFILE:START -->\n<p>公开原创项目 · 按 Star 降序，同星按最近更新排序 · 每小时检查更新<br>数据更新时间：${escape(updated)}</p>\n<table>\n${[0,2].filter(i=>cards[i]).map(i=>'<tr>'+cards.slice(i,i+2).join('\n')+'</tr>').join('\n')}\n</table>\n<!-- PROFILE:END -->`;
+  return `<!-- PROFILE:START -->\n<p>最新公开项目 · 按创建时间从新到旧 · 每小时检查更新<br>数据更新时间：${escape(updated)}</p>\n<table>\n${[0,2].filter(i=>cards[i]).map(i=>'<tr>'+cards.slice(i,i+2).join('\n')+'</tr>').join('\n')}\n</table>\n<!-- PROFILE:END -->`;
 }
 export function chart(repos, calendar, updated, dark) {
   const bg=dark?'#071011':'#f3f0e8', fg=dark?'#f3f0e8':'#15292a', muted=dark?'#a7bcbd':'#52696a';
@@ -31,7 +31,7 @@ export async function refresh() {
   if(response.errors || repos.length<4 || !calendar?.weeks?.length || !Number.isInteger(calendar.totalContributions)) throw new Error('Incomplete GitHub response; preserving published data');
   for(const r of repos) if(!Number.isInteger(r.stargazers_count)||r.stargazers_count<0) throw new Error('Invalid star count');
   for(const w of calendar.weeks) for(const d of w.contributionDays) if(!/^\d{4}-\d{2}-\d{2}$/.test(d.date)||!Number.isInteger(d.contributionCount)||d.contributionCount<0) throw new Error('Invalid calendar');
-  const data={repos:repos.map(({name,description,language,stargazers_count,updated_at})=>({name,description,language,stargazers_count,updated_at})),calendar};
+  const data={repos:repos.map(({name,description,language,stargazers_count,created_at,updated_at})=>({name,description,language,stargazers_count,created_at,updated_at})),calendar};
   const serialized=JSON.stringify(data);
   let old;
   try { old=JSON.parse(await readFile('assets/profile-snapshot.json','utf8')); } catch(e) { if(e.code!=='ENOENT') throw e; }
