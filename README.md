@@ -16,7 +16,6 @@
 
 **Java 后端 · AI Agent · Creative Technology**
 
-我喜欢把抽象的 AI 概念，做成看得见、能运行、可以继续迭代的产品、工具与视觉作品。
 
 ## 最新项目
 
