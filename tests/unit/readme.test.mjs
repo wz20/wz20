@@ -31,13 +31,11 @@ test("keeps one primary live-lab entrance and the approved contact entrance", as
   assert.equal(occurrences(readme, `](${liveLabUrl})`), 1);
 });
 
-test("keeps the exact identity-first section order and primary copy", async () => {
+test("keeps identity before projects and activity without freezing editable biography", async () => {
   const readme = await readFile(readmeUrl, "utf8");
   const sections = [...readme.matchAll(/^## (.+)$/gm)].map(([, heading]) => heading);
 
   assert.deepEqual(sections, ["你好，我是花卷", "最新项目", "当前研究", "代码活动", "找到花卷"]);
-  assert.match(readme, /\*\*Java 后端 · AI Agent · Creative Technology\*\*/);
-  assert.match(readme, /把抽象的 AI 概念，做成看得见、能运行、可以继续迭代的产品、工具与视觉作品。/);
   assert.ok(readme.indexOf("## 你好，我是花卷") < readme.indexOf("profile-activity-dark.svg"));
 });
 
