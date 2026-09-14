@@ -20,9 +20,9 @@
 ## 最新项目
 
 <!-- PROFILE:START -->
-<p>最新公开项目 · 按创建时间从新到旧 · 每小时检查更新<br>数据更新时间：2026-09-14 06:30 UTC</p>
+<p>最新公开项目 · 按创建时间从新到旧 · 每小时检查更新<br>数据更新时间：2026-09-14 14:16 UTC</p>
 <table>
-<tr><td width="50%" valign="top"><h3>how-it-moves</h3><p>★ 1 · HTML</p><p>Technical animation Skill: strict content recipes, causal motion, offline HTML, silent video, and advanced authoring.</p><a href="https://github.com/wz20/how-it-moves">查看项目 →</a></td>
+<tr><td width="50%" valign="top"><h3>how-it-moves</h3><p>★ 1 · Python</p><p>Technical animation Skill: strict content recipes, causal motion, offline HTML, silent video, and advanced authoring.</p><a href="https://github.com/wz20/how-it-moves">查看项目 →</a></td>
 <td width="50%" valign="top"><h3>huajuan-knowledge-cottage</h3><p>★ 1 · TypeScript</p><p>花卷 · 知识小屋：可交互的3D Obsidian知识库看板，工作与休闲双面星球。Electron + Three.js + SQLite。</p><a href="https://github.com/wz20/huajuan-knowledge-cottage">查看项目 →</a></td></tr>
 <tr><td width="50%" valign="top"><h3>desktop-pet-delivery</h3><p>★ 1 · JavaScript</p><p>将角色素材制作成独立 Windows / macOS 桌宠的 Codex Skill，附 Electron 模板、素材导入、安装包构建与清理流程。MIT 开源。</p><a href="https://github.com/wz20/desktop-pet-delivery">查看项目 →</a></td>
 <td width="50%" valign="top"><h3>huajuan-harness-cli</h3><p>★ 7 · JavaScript</p><p>即放即用的 Agent Harness：把本地目录变成可自动进化、审阅与淘汰的知识工作区</p><a href="https://github.com/wz20/huajuan-harness-cli">查看项目 →</a></td></tr>
