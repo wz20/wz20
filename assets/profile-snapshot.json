@@ -1,14 +1,14 @@
 {
-  "updated": "2026-09-16 00:33 UTC",
+  "updated": "2026-09-16 06:12 UTC",
   "data": {
     "repos": [
       {
         "name": "how-it-moves",
         "description": "Technical animation Skill: strict content recipes, causal motion, offline HTML, silent video, and advanced authoring.",
         "language": "Python",
-        "stargazers_count": 2,
+        "stargazers_count": 3,
         "created_at": "2026-09-14T02:20:20Z",
-        "updated_at": "2026-09-15T14:34:47Z"
+        "updated_at": "2026-09-16T05:05:35Z"
       },
       {
         "name": "huajuan-knowledge-cottage",
