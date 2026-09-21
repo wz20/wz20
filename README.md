@@ -20,7 +20,7 @@
 ## 最新项目
 
 <!-- PROFILE:START -->
-<p>最新公开项目 · 按创建时间从新到旧 · 每小时检查更新<br>数据更新时间：2026-09-20 01:19 UTC</p>
+<p>最新公开项目 · 按创建时间从新到旧 · 每小时检查更新<br>数据更新时间：2026-09-21 01:16 UTC</p>
 <table>
 <tr><td width="50%" valign="top"><h3>how-it-moves</h3><p>★ 3 · Python</p><p>Technical animation Skill: strict content recipes, causal motion, offline HTML, silent video, and advanced authoring.</p><a href="https://github.com/wz20/how-it-moves">查看项目 →</a></td>
 <td width="50%" valign="top"><h3>huajuan-knowledge-cottage</h3><p>★ 1 · TypeScript</p><p>花卷 · 知识小屋：可交互的3D Obsidian知识库看板，工作与休闲双面星球。Electron + Three.js + SQLite。</p><a href="https://github.com/wz20/huajuan-knowledge-cottage">查看项目 →</a></td></tr>
