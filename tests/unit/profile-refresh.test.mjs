@@ -14,7 +14,7 @@ test('repository descriptions cannot inject markup into generated README',()=>{
   const html=projectTable([repo('safe',1,{description:'<img src=x onerror="alert(1)">'})],'today');
   assert.doesNotMatch(html,/<img/);
   assert.match(html,/&lt;img/);
-  assert.equal((html.match(/<td /g)||[]).length,1);
+  assert.equal((html.match(/<h3>/g)||[]).length,1);
 });
 test('activity SVG retains zero days and actual contribution counts',()=>{
   for(const dark of [false,true]) {

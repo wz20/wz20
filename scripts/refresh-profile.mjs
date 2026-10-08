@@ -14,13 +14,24 @@ const projectSummaries = new Map([
   ['desktop-pet-delivery', { title: 'Desktop Pet Delivery · 桌宠制作', description: '把角色素材接入独立桌宠的 Codex Skill 与 Electron 模板，提供互动配置和打包流程；各平台成品需分别验收。' }],
   ['huajuan-harness-cli', { title: 'Huajuan Harness · Agent 工作区', description: '为本地目录配置知识入库、记忆维护与审阅流程，让 Agent 按工作区规则整理知识，并保留可检查的变更记录。' }],
 ]);
+const projectMedia = new Map([
+  ['how-it-moves', { src: 'https://raw.githubusercontent.com/wz20/how-it-moves/main/docs/media/agent-loop.gif', alt: 'How It Moves：Agent 流程历史演示', caption: '技术动画 · 历史案例演示' }],
+  ['huajuan-knowledge-cottage', { src: 'https://raw.githubusercontent.com/wz20/huajuan-knowledge-cottage/main/docs/demo.gif', alt: '花卷知识小屋：实际应用演示', caption: '知识管理 · 实际应用演示' }],
+  ['desktop-pet-delivery', { src: 'https://raw.githubusercontent.com/wz20/desktop-pet-delivery/main/docs/images/desktop-pet-delivery.png', alt: '桌宠制作 Skill 的概念封面，非运行截图', caption: '桌宠制作 · 概念封面' }],
+  ['huajuan-harness-cli', { src: 'https://raw.githubusercontent.com/wz20/huajuan-harness-cli/main/docs/images/cli-real-start.png', alt: '花卷 Harness：真实 CLI 启动画面', caption: 'Agent 工具 · 实际运行画面' }],
+]);
 export function projectTable(repos, updated) {
-  const cards = repos.slice(0,4).map(r => `<td width="50%" valign="top"><h3>${escape(projectSummaries.get(r.name)?.title || r.name)}</h3><p>★ ${r.stargazers_count} · ${escape(r.language || '多语言')}</p><p>${escape(projectSummaries.get(r.name)?.description || r.description || '查看仓库了解项目代码与文档。')}</p><a href="https://github.com/wz20/${encodeURIComponent(r.name)}">查看项目 →</a></td>`);
-  return `<!-- PROFILE:START -->\n<p>最新公开项目 · 按创建时间从新到旧 · 每小时检查更新<br>数据更新时间：${escape(updated)}</p>\n<table>\n${[0,2].filter(i=>cards[i]).map(i=>'<tr>'+cards.slice(i,i+2).join('\n')+'</tr>').join('\n')}\n</table>\n<!-- PROFILE:END -->`;
+  const cards = repos.slice(0,4).map((r, i) => {
+    const media = projectMedia.get(r.name);
+    const url = `https://github.com/wz20/${encodeURIComponent(r.name)}`;
+    const visual = media ? `<p><img src="${escape(media.src)}" width="100%" alt="${escape(media.alt)}"><br><sub>${escape(media.caption)}</sub></p>` : '';
+    return `<h3>${String(i+1).padStart(2,'0')} / ${escape(projectSummaries.get(r.name)?.title || r.name)}</h3>\n${visual}\n<p>${escape(projectSummaries.get(r.name)?.description || r.description || '查看仓库了解项目代码与文档。')}</p>\n<p><a href="${url}"><b>探索项目 ↗</b></a>　<sub>${escape(r.language || '多语言')} · ★ ${r.stargazers_count}</sub></p>`;
+  });
+  return `<!-- PROFILE:START -->\n${cards.join('\n<br>\n')}\n<details><summary>关于这些项目与自动更新</summary><p>最新公开原创、非归档项目，按创建时间排序；每小时检查。数据更新时间：${escape(updated)}。演示、概念封面与功能验证边界以各仓库说明为准。</p></details>\n<!-- PROFILE:END -->`;
 }
 export function chart(repos, calendar, updated, dark) {
-  const bg=dark?'#071011':'#f3f0e8', fg=dark?'#f3f0e8':'#15292a', muted=dark?'#a7bcbd':'#52696a';
-  const shades=dark?['#213536','#146b68','#199b95','#24d8d2','#a0fff4']:['#dce3df','#b2d9cd','#62b99f','#208971','#08664f'];
+  const bg=dark?'#232620':'#f4eee2', fg=dark?'#f4eee2':'#292a25', muted=dark?'#b7bdac':'#656b59';
+  const shades=dark?['#353c30','#586847','#819268','#b0bc8f','#e4dfbd']:['#e2e4d5','#c4ccad','#99aa7e','#73875c','#4b633d'];
   const days=calendar.weeks.flatMap((w,x)=>w.contributionDays.map(d=>{
     const y=new Date(d.date+'T00:00:00Z').getUTCDay();
     const n=d.contributionCount, level=n===0?0:n<3?1:n<6?2:n<10?3:4;
