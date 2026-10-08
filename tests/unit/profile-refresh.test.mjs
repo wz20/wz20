@@ -24,3 +24,12 @@ test('activity SVG retains zero days and actual contribution counts',()=>{
     assert.doesNotMatch(svg,/<script|foreignObject|href=/);
   }
 });
+
+test('curated summaries survive refresh while new projects retain discovery fallback',()=>{
+  const html=projectTable([repo('how-it-moves',3,{description:'old upstream summary'}),repo('new-project',0,{description:'New public project'})],'today');
+  assert.match(html,/让原理动起来/);
+  assert.doesNotMatch(html,/old upstream summary/);
+  assert.match(html,/new-project/);
+  assert.match(html,/New public project/);
+  assert.ok(html.indexOf('how-it-moves') < html.indexOf('new-project'));
+});

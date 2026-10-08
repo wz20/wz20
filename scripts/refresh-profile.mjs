@@ -7,8 +7,15 @@ export function rank(repos) {
   return repos.filter(r => !r.private && !r.fork && !r.archived && r.name !== 'wz20' && r.owner?.login === 'wz20')
     .sort((a,b) => b.created_at.localeCompare(a.created_at) || a.name.localeCompare(b.name, 'en'));
 }
+// Human-written summaries describe scope; GitHub remains the source for ordering and stats.
+const projectSummaries = new Map([
+  ['how-it-moves', { title: 'How It Moves · 让原理动起来', description: '把技术机制组织成动画与插画的制作 Skill，支持 HTML、无声 MP4 与 SVG；具体能力和案例边界见仓库说明。' }],
+  ['huajuan-knowledge-cottage', { title: '花卷 · 知识小屋', description: '把本地 Obsidian 知识库搬进可翻转的 3D 小星球，串起笔记浏览、待办与休闲互动。提供 macOS Apple Silicon 安装包。' }],
+  ['desktop-pet-delivery', { title: 'Desktop Pet Delivery · 桌宠制作', description: '把角色素材接入独立桌宠的 Codex Skill 与 Electron 模板，提供互动配置和打包流程；各平台成品需分别验收。' }],
+  ['huajuan-harness-cli', { title: 'Huajuan Harness · Agent 工作区', description: '为本地目录配置知识入库、记忆维护与审阅流程，让 Agent 按工作区规则整理知识，并保留可检查的变更记录。' }],
+]);
 export function projectTable(repos, updated) {
-  const cards = repos.slice(0,4).map(r => `<td width="50%" valign="top"><h3>${escape(r.name)}</h3><p>★ ${r.stargazers_count} · ${escape(r.language || '多语言')}</p><p>${escape(r.description || '查看仓库了解项目代码与文档。')}</p><a href="https://github.com/wz20/${encodeURIComponent(r.name)}">查看项目 →</a></td>`);
+  const cards = repos.slice(0,4).map(r => `<td width="50%" valign="top"><h3>${escape(projectSummaries.get(r.name)?.title || r.name)}</h3><p>★ ${r.stargazers_count} · ${escape(r.language || '多语言')}</p><p>${escape(projectSummaries.get(r.name)?.description || r.description || '查看仓库了解项目代码与文档。')}</p><a href="https://github.com/wz20/${encodeURIComponent(r.name)}">查看项目 →</a></td>`);
   return `<!-- PROFILE:START -->\n<p>最新公开项目 · 按创建时间从新到旧 · 每小时检查更新<br>数据更新时间：${escape(updated)}</p>\n<table>\n${[0,2].filter(i=>cards[i]).map(i=>'<tr>'+cards.slice(i,i+2).join('\n')+'</tr>').join('\n')}\n</table>\n<!-- PROFILE:END -->`;
 }
 export function chart(repos, calendar, updated, dark) {
