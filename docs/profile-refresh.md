@@ -25,4 +25,7 @@ GitHub API 请求或校验失败时不提交，继续展示上一次有效数据
 
 项目卡片的中文名称与简介维护在 `scripts/refresh-profile.mjs` 的 `projectSummaries` 中，避免每小时刷新覆盖人工文案。新增仓库不需要手动登记：没有中文简介时自动使用 GitHub 仓库名称与描述。功能变化时应同步核对对应简介；排序和统计仍来自 GitHub。
 
-视觉版：项目卡片中的演示图在 `projectMedia` 中维护，并标明历史演示、概念封面或实际画面。新项目没有图片时使用文字卡片，仍自动进入最新四项。README 不使用脚本或自定义 CSS。贡献图采用纸色与绿色色阶，默认收纳在可展开区域。
+
+Creator Bento 视觉版：项目卡片由 `projectCard` 根据真实仓库数据生成，每项有桌面横版与手机竖版，通过 README 的 picture/source 按 600px 切换。`cardCopy` 保存简短展示文字，`projectSummaries` 保存完整描述；新项目自动回退到仓库名与描述，并换行、转义与截断。所有卡片均为仓库内静态 SVG，没有外部图片或脚本依赖。
+
+刷新时同时生成 README、8 张项目卡片、贡献 SVG 与数据快照。工作流必须提交 `assets/profile-project-*.svg`，避免排名已更新而图卡仍为旧项目。贡献区采用同一套深底黄色系，默认折叠。主视觉使用默认 image_gen 生成，来源和提示词见 `docs/profile-visual-design.md`。

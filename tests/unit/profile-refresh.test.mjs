@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { rank, projectTable, chart } from '../../scripts/refresh-profile.mjs';
+import { rank, projectTable, projectCard, wrapText, chart } from '../../scripts/refresh-profile.mjs';
 
 const repo=(name,stars,extra={})=>({name,owner:{login:'wz20'},stargazers_count:stars,created_at:'2026-01-01T00:00:00Z',updated_at:'2026-01-01T00:00:00Z',...extra});
 test('ranking discovers new repositories and filters excluded sources',()=>{
@@ -12,9 +12,9 @@ test('creation date wins over stars and updates; equal dates use repository name
 });
 test('repository descriptions cannot inject markup into generated README',()=>{
   const html=projectTable([repo('safe',1,{description:'<img src=x onerror="alert(1)">'})],'today');
-  assert.doesNotMatch(html,/<img/);
+  assert.doesNotMatch(html,/<img src=x/);
   assert.match(html,/&lt;img/);
-  assert.equal((html.match(/<h3>/g)||[]).length,1);
+  assert.equal((html.match(/<picture>/g)||[]).length,1);
 });
 test('activity SVG retains zero days and actual contribution counts',()=>{
   for(const dark of [false,true]) {
@@ -32,4 +32,15 @@ test('curated summaries survive refresh while new projects retain discovery fall
   assert.match(html,/new-project/);
   assert.match(html,/New public project/);
   assert.ok(html.indexOf('how-it-moves') < html.indexOf('new-project'));
+});
+
+test('long and hostile new-project text is wrapped and escaped in both card layouts',()=>{
+  const r=repo('long-new-repository-name-with-more-than-seventy-characters-and-extra-words',3,{description:'<script>alert(1)</script> 很长的中文描述'.repeat(15)});
+  for(const mobile of [false,true]) {
+    const svg=projectCard(r,0,mobile);
+    assert.doesNotMatch(svg,/<script>/);
+    assert.match(svg,/&lt;script&gt;/);
+    assert.match(svg,/…/);
+  }
+  assert.ok(wrapText('汉字'.repeat(100),20,3).length<=3);
 });

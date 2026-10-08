@@ -28,7 +28,7 @@ jobs:
         run: node --test tests/unit/profile-refresh.test.mjs tests/unit/readme.test.mjs
       - name: Commit changed data
         run: |
-          git add README.md assets/profile-snapshot.json assets/profile-activity-dark.svg assets/profile-activity-light.svg
+          git add README.md assets/profile-snapshot.json assets/profile-activity-dark.svg assets/profile-activity-light.svg assets/profile-project-*.svg
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
