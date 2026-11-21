@@ -5,22 +5,22 @@
 <img src="./assets/profile-section.svg" width="100%" alt="开源作品 / Latest projects — 点击卡片探索项目">
 
 <!-- PROFILE:START -->
-<a href="https://github.com/wz20/dsh-dafeiyu-dot"><picture><source media="(max-width: 600px)" srcset="./assets/profile-project-1-mobile.svg"><img src="./assets/profile-project-1.svg" width="100%" alt="1. dsh-dafeiyu-dot：DeepSeek Harness 陪伴插件：情绪语音、记忆宫殿、QQ、语音通话与记账挂件。"></picture></a>
+<a href="https://github.com/wz20/huajuan-courseware"><picture><source media="(max-width: 600px)" srcset="./assets/profile-project-1-mobile.svg"><img src="./assets/profile-project-1.svg" width="100%" alt="1. huajuan-courseware：可交互课件 Skill：把知识点做成可离线操作的课堂实验，附地理、数学、物理、生物和化学五科示例。"></picture></a>
 
-<a href="https://github.com/wz20/Focus"><picture><source media="(max-width: 600px)" srcset="./assets/profile-project-2-mobile.svg"><img src="./assets/profile-project-2.svg" width="100%" alt="2. Focus：本地优先的四象限任务管理、时间轴与工作月历 · Local-first macOS task manager"></picture></a>
+<a href="https://github.com/wz20/dsh-dafeiyu-dot"><picture><source media="(max-width: 600px)" srcset="./assets/profile-project-2-mobile.svg"><img src="./assets/profile-project-2.svg" width="100%" alt="2. dsh-dafeiyu-dot：DeepSeek Harness 陪伴插件：情绪语音、记忆宫殿、QQ、语音通话与记账挂件。"></picture></a>
 
-<a href="https://github.com/wz20/how-it-moves"><picture><source media="(max-width: 600px)" srcset="./assets/profile-project-3-mobile.svg"><img src="./assets/profile-project-3.svg" width="100%" alt="3. How It Moves · 让原理动起来：把技术机制组织成动画与插画的制作 Skill，支持 HTML、无声 MP4 与 SVG；具体能力和案例边界见仓库说明。"></picture></a>
+<a href="https://github.com/wz20/Focus"><picture><source media="(max-width: 600px)" srcset="./assets/profile-project-3-mobile.svg"><img src="./assets/profile-project-3.svg" width="100%" alt="3. Focus：本地优先的四象限任务管理、时间轴与工作月历 · Local-first macOS task manager"></picture></a>
 
-<a href="https://github.com/wz20/huajuan-knowledge-cottage"><picture><source media="(max-width: 600px)" srcset="./assets/profile-project-4-mobile.svg"><img src="./assets/profile-project-4.svg" width="100%" alt="4. 花卷 · 知识小屋：把本地 Obsidian 知识库搬进可翻转的 3D 小星球，串起笔记浏览、待办与休闲互动。提供 macOS Apple Silicon 安装包。"></picture></a>
+<a href="https://github.com/wz20/how-it-moves"><picture><source media="(max-width: 600px)" srcset="./assets/profile-project-4-mobile.svg"><img src="./assets/profile-project-4.svg" width="100%" alt="4. How It Moves · 让原理动起来：把技术机制组织成动画与插画的制作 Skill，支持 HTML、无声 MP4 与 SVG；具体能力和案例边界见仓库说明。"></picture></a>
 
 <details><summary>项目目录与更新说明</summary>
 
+- **huajuan-courseware**：可交互课件 Skill：把知识点做成可离线操作的课堂实验，附地理、数学、物理、生物和化学五科示例。
 - **dsh-dafeiyu-dot**：DeepSeek Harness 陪伴插件：情绪语音、记忆宫殿、QQ、语音通话与记账挂件。
 - **Focus**：本地优先的四象限任务管理、时间轴与工作月历 · Local-first macOS task manager
 - **How It Moves · 让原理动起来**：把技术机制组织成动画与插画的制作 Skill，支持 HTML、无声 MP4 与 SVG；具体能力和案例边界见仓库说明。
-- **花卷 · 知识小屋**：把本地 Obsidian 知识库搬进可翻转的 3D 小星球，串起笔记浏览、待办与休闲互动。提供 macOS Apple Silicon 安装包。
 
-最新四个公开原创、非归档项目，按创建时间排序；每小时检查。数据更新时间：2026-11-21 02:35 UTC。
+最新四个公开原创、非归档项目，按创建时间排序；每小时检查。数据更新时间：2026-11-21 19:33 UTC。
 </details>
 <!-- PROFILE:END -->
 

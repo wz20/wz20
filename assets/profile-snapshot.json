@@ -1,7 +1,15 @@
 {
-  "updated": "2026-11-21 02:35 UTC",
+  "updated": "2026-11-21 19:33 UTC",
   "data": {
     "repos": [
+      {
+        "name": "huajuan-courseware",
+        "description": "可交互课件 Skill：把知识点做成可离线操作的课堂实验，附地理、数学、物理、生物和化学五科示例。",
+        "language": "HTML",
+        "stargazers_count": 0,
+        "created_at": "2026-11-21T11:44:22Z",
+        "updated_at": "2026-11-21T11:44:41Z"
+      },
       {
         "name": "dsh-dafeiyu-dot",
         "description": "DeepSeek Harness 陪伴插件：情绪语音、记忆宫殿、QQ、语音通话与记账挂件。",
@@ -148,7 +156,7 @@
       }
     ],
     "calendar": {
-      "totalContributions": 71,
+      "totalContributions": 73,
       "weeks": [
         {
           "contributionDays": [
@@ -1842,7 +1850,7 @@
             },
             {
               "date": "2026-11-21",
-              "contributionCount": 0
+              "contributionCount": 2
             }
           ]
         }
