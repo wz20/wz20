@@ -1,14 +1,14 @@
 {
-  "updated": "2026-11-22 00:30 UTC",
+  "updated": "2026-11-22 08:16 UTC",
   "data": {
     "repos": [
       {
         "name": "huajuan-courseware",
         "description": "可交互课件 Skill：把知识点做成可离线操作的课堂实验，附地理、数学、物理、生物和化学五科示例。",
-        "language": "HTML",
+        "language": "JavaScript",
         "stargazers_count": 0,
         "created_at": "2026-11-21T11:44:22Z",
-        "updated_at": "2026-11-21T11:44:41Z"
+        "updated_at": "2026-11-22T03:13:04Z"
       },
       {
         "name": "dsh-dafeiyu-dot",
@@ -156,7 +156,7 @@
       }
     ],
     "calendar": {
-      "totalContributions": 73,
+      "totalContributions": 77,
       "weeks": [
         {
           "contributionDays": [
@@ -1826,7 +1826,7 @@
           "contributionDays": [
             {
               "date": "2026-11-22",
-              "contributionCount": 0
+              "contributionCount": 4
             }
           ]
         }
